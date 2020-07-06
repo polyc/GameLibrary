@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">GameLibrary</string>
+    <string name="app_label">GameLibrary</string>
+    <string name="search_hint">Search Games</string>
+    <string name="empty_name">\"No Name\"</string>
 </resources>

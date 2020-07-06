@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.example.gamelibrary.library.LibraryActivity
+import com.example.gamelibrary.search.SearchGamesActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -74,6 +76,8 @@ class AuthActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
+                    val intent = Intent(this, SearchGamesActivity::class.java)
+                    startActivity(intent)
                     //updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
