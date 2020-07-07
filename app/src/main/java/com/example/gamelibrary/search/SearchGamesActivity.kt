@@ -45,7 +45,7 @@ class SearchGamesActivity : AppCompatActivity() {
             }
         }
         else {
-            search(null)
+            search(null,true)
         }
 
     }
@@ -55,7 +55,7 @@ class SearchGamesActivity : AppCompatActivity() {
         val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
             val obj:JSONObject = JSONObject(response)
             val array: JSONArray = obj.getJSONArray("results")
-            val gameList :MutableList<Game> = mutableListOf()
+            val gameList :MutableList<Game?> = mutableListOf()
 
             for (game_idx in 0 until array.length()-1) {
                 val game: JSONObject = array[game_idx] as JSONObject
