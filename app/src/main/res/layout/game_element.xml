@@ -16,33 +16,64 @@
         android:layout_margin="16dp"
         card_view:cardCornerRadius="8dp">
 
-        <RelativeLayout
-            android:orientation="horizontal"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/background_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="30sp"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
-                android:layout_height="30sp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="5sp"
                 android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/metacritic"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:textAlignment="viewEnd"
-                android:layout_height="30sp"
-                android:layout_marginLeft="50sp"
-                android:layout_marginRight="5sp"
-                android:textSize="20sp" />
-        </RelativeLayout>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="60sp"
+                    android:layout_height="30sp"
+                    android:layout_toLeftOf="@id/metacritic"
+                    android:src="@drawable/ic_metacritic_logo" />
+
+                <TextView
+                    android:id="@+id/metacritic"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:textAlignment="viewEnd"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5sp"
+                    android:layout_marginRight="5sp"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/background_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/addRemove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/background_image"
+                    android:layout_marginRight="10sp"
+                    android:layout_alignBottom="@id/background_image"
+                    android:layout_marginBottom="10sp"
+                    android:src="@drawable/ic_baseline_add_24" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
 
 
     </androidx.cardview.widget.CardView>

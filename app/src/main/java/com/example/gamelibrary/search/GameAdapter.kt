@@ -1,6 +1,5 @@
 package com.example.gamelibrary.search
 
-import android.icu.number.NumberFormatter.with
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +20,12 @@ class GameAdapter (private val gameList: MutableList<Game?>)
         val game: Game? = gameList[position]
         if(game != null){
             holder.itemView.name.text = game.name
-            holder.itemView.metacritic.text = game.metacriticRating.toString()
+
+            if(game.metacriticRating != null)
+                holder.itemView.metacritic.text = game.metacriticRating.toString()
+            else
+                holder.itemView.metacritic.text = "-"
+
             Picasso.get().load(game.backgroundImage).fit().into(holder.backgroundImage)
         }
 

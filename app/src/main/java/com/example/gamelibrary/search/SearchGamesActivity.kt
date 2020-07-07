@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -15,9 +14,6 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
-import com.google.gson.JsonArray
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -27,6 +23,7 @@ const val url = "https://api.rawg.io/api/"
 
 class SearchGamesActivity : AppCompatActivity() {
 
+    private var page =  1
     private lateinit var queue: RequestQueue
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<GameViewHolder>
@@ -41,17 +38,17 @@ class SearchGamesActivity : AppCompatActivity() {
 
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                search(query,false)
+                search(query, page,false)
             }
         }
         else {
-            search(null,true)
+            search(null, page,true)
         }
 
     }
 
-    private fun search(query :String?, defaultQuery: Boolean = true){
-        val q = if(defaultQuery){"games"} else {"games/?slug="+query}
+    private fun search(query :String?, page :Int, defaultQuery: Boolean = true){
+        val q = if(defaultQuery){"games"} else {"games?search="+query}
         val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
             val obj:JSONObject = JSONObject(response)
             val array: JSONArray = obj.getJSONArray("results")
@@ -61,7 +58,11 @@ class SearchGamesActivity : AppCompatActivity() {
                 val game: JSONObject = array[game_idx] as JSONObject
                 val name = game.get("name").toString()
                 val backgroundImage: String? = game.get("background_image").toString()
-                val metacriticRating: Int? = game.get("metacritic") as Int
+
+                var metacriticRating :Int? = null
+                if(!game.isNull("metacritic"))
+                    metacriticRating = game.get("metacritic") as Int?
+
                 gameList.add(Game(name, backgroundImage, metacriticRating))
             }
 
