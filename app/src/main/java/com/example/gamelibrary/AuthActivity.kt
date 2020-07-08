@@ -4,16 +4,18 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.example.gamelibrary.library.LibraryActivity
+import com.example.gamelibrary.data.UserData
 import com.example.gamelibrary.search.SearchGamesActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 const val RC_SIGN_IN = 1
@@ -22,6 +24,7 @@ const val TAG = "GoogleSingIn"
 class AuthActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     private lateinit var  googleSignInClient: GoogleSignInClient
 
@@ -76,7 +79,21 @@ class AuthActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
+                    Log.d(TAG, "${user.toString()}")
+
+                    db = Firebase.firestore
+                    val userObj = UserData(user!!.displayName, mapOf(Pair("init", "init")))
+                    db.collection("userData").document(user!!.uid).get().addOnSuccessListener{ doc ->
+                        Log.d(TAG, "${doc.toString()}")
+                        if (doc.data == null){
+                            db.collection("userData").document(user!!.uid).set(userObj)
+                        }
+                    }
+
+
+
                     val intent = Intent(this, SearchGamesActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent)
                     //updateUI(user)
                 } else {
