@@ -16,7 +16,8 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="#FFFFFF"
-        app:subtitleTextColor="#FFFFFF"/>
+        app:subtitleTextColor="#FFFFFF"
+        app:title="@string/app_name"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
