@@ -3,4 +3,6 @@
     <string name="app_label">GameLibrary</string>
     <string name="search_hint">Search Games</string>
     <string name="empty_name">\"No Name\"</string>
+    <string name="metacritic_logo">Metacritic Logo</string>
+    <string name="videogame_image_background">videogame image background</string>
 </resources>
