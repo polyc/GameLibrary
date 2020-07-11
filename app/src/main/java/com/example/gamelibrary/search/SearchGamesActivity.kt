@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +20,6 @@ import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -53,11 +51,11 @@ class SearchGamesActivity : AppCompatActivity() {
 
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                search(query,false)
+                search(query, page,false)
             }
         }
         else {
-            search(null,true)
+            search(null, page,true)
         }
 
     }
@@ -68,12 +66,12 @@ class SearchGamesActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         if (Intent.ACTION_SEARCH == intent?.action) {
-            intent?.getStringExtra(SearchManager.QUERY)?.also { query ->
-                search(query, false)
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                search(query, page,false)
             }
         }
         else {
-            search(null,true)
+            search(null, page,true)
         }
     }
 
@@ -96,8 +94,13 @@ class SearchGamesActivity : AppCompatActivity() {
         return true
     }
 
-    private fun search(query :String?, defaultQuery: Boolean = true){
-        val q = if(defaultQuery){"games"} else {"games?search="+query}
+    private fun search(query :String?, page :Int, defaultQuery: Boolean = true){
+        val q =
+            if(defaultQuery){
+                "games?page=$page"
+            }
+            else {"games?search="+query+"&page="+page}
+
         val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
             val obj:JSONObject = JSONObject(response)
             val array: JSONArray = obj.getJSONArray("results")
@@ -113,7 +116,7 @@ class SearchGamesActivity : AppCompatActivity() {
                 if(!game.isNull("metacritic"))
                     metacriticRating = game.get("metacritic") as Int?
 
-                gameList.add(Game(name, backgroundImage, metacriticRating, id))
+                gameList.add(Game(name, id, backgroundImage, metacriticRating))
             }
 
             viewManager = LinearLayoutManager(this)
