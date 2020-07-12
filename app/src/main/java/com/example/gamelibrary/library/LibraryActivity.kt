@@ -34,6 +34,7 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<LibraryViewHolder>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var queue: RequestQueue? = null
+    private lateinit var library :MutableList<String>
 
     private lateinit var  googleSignInClient: GoogleSignInClient
 
@@ -132,14 +133,14 @@ class LibraryActivity : AppCompatActivity() {
 
         db.collection("userData").document(auth.currentUser!!.uid).
             get().addOnSuccessListener{
-            var library = it.get("library") as Map<String, String>
-            library = library.filterKeys { key-> key != "init" }
-            Log.d(TAG, library.toString())
+            var libData = it.get("library") as Map<String, String>
+            libData = libData.filterKeys { key-> key != "init" }
+            Log.d(TAG, libData.toString())
 
-            val keys = library.keys.toMutableList()
+            library = libData.keys.toMutableList()
 
             viewManager = LinearLayoutManager(this)
-            viewAdapter = LibraryAdapter(keys, db, auth.uid!!, queue!!)
+            viewAdapter = LibraryAdapter(library, db, auth.uid!!, queue!!, this)
 
             recyclerView = findViewById<RecyclerView>(R.id.library_recycler_view).apply{
                 layoutManager = viewManager
@@ -150,15 +151,24 @@ class LibraryActivity : AppCompatActivity() {
         }.addOnFailureListener(){}
     }
 
-    /*override fun onResume() {
+    private fun refreshLibrary(){
+        db.collection("userData").document(auth.currentUser!!.uid).
+        get().addOnSuccessListener{
+            var libData = it.get("library") as Map<String, String>
+            libData = libData.filterKeys { key-> key != "init" }
+            Log.d(TAG, libData.toString())
 
-        super.onResume()
-    }*/
+            library.clear()
+
+            library.addAll(libData.keys.toMutableList())
+            viewAdapter.notifyDataSetChanged()
+        }
+    }
 
     override fun onRestart() {
         //REFRESH DATA
         super.onRestart()
-        populateLibrary()
+        refreshLibrary()
     }
 }
 
