@@ -1,22 +1,18 @@
 package com.example.gamelibrary.search
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
-import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.game_element.view.*
 
-class GameAdapter (private val gameList: MutableList<Game?>, private val db: FirebaseFirestore, private val userId: String)
+class GameSearchAdapter (private val gameList: MutableList<Game?>, private val db: FirebaseFirestore, private val userId: String)
     :RecyclerView.Adapter<GameViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {

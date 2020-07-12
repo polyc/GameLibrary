@@ -120,7 +120,7 @@ class SearchGamesActivity : AppCompatActivity() {
             }
 
             viewManager = LinearLayoutManager(this)
-            viewAdapter = GameAdapter(gameList, db, user!!.uid)
+            viewAdapter = GameSearchAdapter(gameList, db, user!!.uid)
 
             recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply{
                 setHasFixedSize(true)
