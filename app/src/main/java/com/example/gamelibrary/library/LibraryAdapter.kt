@@ -1,5 +1,7 @@
 package com.example.gamelibrary.library
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
+import com.example.gamelibrary.game.GameActivity
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
@@ -24,7 +27,8 @@ const val TAGLIB = "GameLibrary"
 class LibraryAdapter(private val gameList: MutableList<String>,
                      private val db: FirebaseFirestore,
                      private val userId: String,
-                     private val queue: RequestQueue):
+                     private val queue: RequestQueue,
+                     private val context: Context):
     RecyclerView.Adapter<LibraryViewHolder>() {
 
     private var gameObjMap: MutableMap<String, Game> = mutableMapOf()
@@ -85,6 +89,12 @@ class LibraryAdapter(private val gameList: MutableList<String>,
             gameList.remove(game.id.toString())
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount);
+        }
+
+        holder.details.setOnClickListener{
+            val intent = Intent(context, GameActivity::class.java)
+            intent.putExtra("com.example.gamelibrary.data.Game", game)
+            context.startActivity(intent)
         }
     }
 
