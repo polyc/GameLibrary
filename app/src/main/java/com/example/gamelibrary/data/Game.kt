@@ -11,7 +11,8 @@ data class Game(val name :String,
                 val website: String? = null,
                 val releaseDate: String? = null,
                 val averagePlaytime: Int? = null,
-                val dominantColor: String? = null
+                val developer: String? = null,
+                val publisher: String? = null
 ):Parcelable{
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -22,6 +23,7 @@ data class Game(val name :String,
         parcel.readString(),
         parcel.readString(),
         parcel?.readInt(),
+        parcel.readString(),
         parcel.readString()
     )
 
@@ -38,8 +40,8 @@ data class Game(val name :String,
         if (averagePlaytime != null) {
             p0?.writeInt(averagePlaytime)
         }
-        p0?.writeString(dominantColor)
-
+        p0?.writeString(developer)
+        p0?.writeString(publisher)
     }
 
     override fun describeContents(): Int {
