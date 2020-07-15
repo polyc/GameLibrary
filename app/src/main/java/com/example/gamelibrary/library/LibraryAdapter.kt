@@ -1,6 +1,7 @@
 package com.example.gamelibrary.library
 
-import android.content.Context
+import android.app.Activity
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.example.gamelibrary.R
-import com.example.gamelibrary.data.Game
 import com.example.gamelibrary.game.GameActivity
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,10 +28,8 @@ class LibraryAdapter(private val gameList: MutableList<String>,
                      private val db: FirebaseFirestore,
                      private val userId: String,
                      private val queue: RequestQueue,
-                     private val context: Context):
+                     private val context: Activity):
     RecyclerView.Adapter<LibraryViewHolder>() {
-
-    private var gameObjMap: MutableMap<String, Game> = mutableMapOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryViewHolder {
         val itemView: View = LayoutInflater.from(parent.context).inflate(R.layout.library_element, parent, false)
@@ -41,59 +39,51 @@ class LibraryAdapter(private val gameList: MutableList<String>,
     override fun getItemCount()= gameList.size
 
     override fun onBindViewHolder(holder: LibraryViewHolder, position: Int) {
-        if(!gameObjMap.containsKey(gameList[position])){
-            val request = StringRequest(Request.Method.GET, getQuery(gameList[position]), Response.Listener { response ->
-                val gameJson: JSONObject = JSONObject(response)
-                val id = gameJson.get("id") as Int
-                val name = gameJson.get("name") as String
-                val backgroundImage = gameJson.get("background_image") as String
+        val pref = context.getSharedPreferences("Library", MODE_PRIVATE)
 
-                var metacriticRating: Int? = null
-                if(!gameJson.isNull("metacritic"))
-                    metacriticRating = gameJson.get("metacritic") as Int
+        if(!pref.contains(gameList[position])){
+            val request = JsonObjectRequest(Request.Method.GET, getQuery(gameList[position]), null,
+                Response.Listener { response ->
+                    val gameJson: JSONObject = response
+                    pref.edit().putString(gameList[position], gameJson.toString()).apply()
+                    setHolder(holder, gameJson, position)
 
-                //ADD OTHER FIELDS TO OBJECT
-                val game = Game(name, id, backgroundImage, metacriticRating)
-                gameObjMap[id.toString()] = game
-
-                setHolder(holder, game, position)
-
-            },Response.ErrorListener { Log.d(TAGLIB, "Unable to get game with gameId:${gameList[position]}") })
+                },Response.ErrorListener { Log.d(TAGLIB, "Unable to get game with gameId:${gameList[position]}") })
 
             queue.add(request)
         }
         else{
-            setHolder(holder, gameObjMap[gameList[position]] ?: error("Item not found"), position)
+            setHolder(holder, JSONObject(pref.getString(gameList[position], "Item not Found")!!), position)
         }
 
     }
 
-    private fun setHolder(holder: LibraryViewHolder, game: Game, position: Int){
-
+    private fun setHolder(holder: LibraryViewHolder, game: JSONObject, position: Int){
         //set game title
-        holder.itemView.name.text = game.name
+        holder.itemView.name.text = game.getString("name")
 
         //set metacritic rating
-        if(game.metacriticRating != null)
-            holder.itemView.metacritic.text = game.metacriticRating.toString()
+        if(!game.isNull("metacritic"))
+            holder.itemView.metacritic.text = game.getInt("metacritic").toString()
         else
             holder.itemView.metacritic.text = "-"
 
         //set background image
-        Picasso.get().load(game.backgroundImage).fit().into(holder.backgroundImage)
+        if(!game.isNull("background_image"))
+            Picasso.get().load(game.getString("background_image")).fit().into(holder.backgroundImage)
 
         holder.remove.setOnClickListener {
             db.collection("userData").document(userId).update(hashMapOf<String,Any>(
-                "library."+game.id.toString() to FieldValue.delete()
+                "library."+game.get("id").toString() to FieldValue.delete()
             ))
-            gameList.remove(game.id.toString())
+            gameList.remove(game.get("id").toString())
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount);
         }
 
         holder.details.setOnClickListener{
             val intent = Intent(context, GameActivity::class.java)
-            intent.putExtra("com.example.gamelibrary.data.Game", game)
+            intent.putExtra("gameID", gameList[position])
             context.startActivity(intent)
         }
     }
