@@ -42,17 +42,21 @@ class LibraryAdapter(private val gameList: MutableList<String>,
         val pref = context.getSharedPreferences("Library", MODE_PRIVATE)
 
         if(!pref.contains(gameList[position])){
+            //get data from API
             val request = JsonObjectRequest(Request.Method.GET, getQuery(gameList[position]), null,
                 Response.Listener { response ->
                     val gameJson: JSONObject = response
+                    //Put the Json String in SharedPreferences (cache API result)
                     pref.edit().putString(gameList[position], gameJson.toString()).apply()
+                    //setup the ViewHolder
                     setHolder(holder, gameJson, position)
 
                 },Response.ErrorListener { Log.d(TAGLIB, "Unable to get game with gameId:${gameList[position]}") })
 
             queue.add(request)
         }
-        else{
+        else{//game Json String is present in SharedPreferences
+            //setup ViewHolder
             setHolder(holder, JSONObject(pref.getString(gameList[position], "Item not Found")!!), position)
         }
 
@@ -72,22 +76,28 @@ class LibraryAdapter(private val gameList: MutableList<String>,
         if(!game.isNull("background_image"))
             Picasso.get().load(game.getString("background_image")).fit().into(holder.backgroundImage)
 
+        //setup the remove FAB behavior
         holder.remove.setOnClickListener {
+            //delete entry in Firebase
             db.collection("userData").document(userId).update(hashMapOf<String,Any>(
                 "library."+game.get("id").toString() to FieldValue.delete()
             ))
+            //delete entry in adapter data list
             gameList.remove(game.get("id").toString())
+
+            //notify the adapter
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount);
         }
 
+        //setup the details FAB behavior
         holder.details.setOnClickListener{
+            //start GameActivity
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("gameID", gameList[position])
             context.startActivity(intent)
         }
     }
 
-    private
-    fun getQuery(gameId: String) = url + "games/${gameId}"
+    private fun getQuery(gameId: String) = url + "games/${gameId}"
 }

@@ -3,6 +3,7 @@ package com.example.gamelibrary.library
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -54,7 +56,6 @@ class LibraryActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         signIn()
 
-        // ...
         // Initialize Firebase Auth
         auth = Firebase.auth
 
@@ -65,7 +66,6 @@ class LibraryActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent,
@@ -83,11 +83,11 @@ class LibraryActivity : AppCompatActivity() {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
+                //Perform authentication
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
-                // ...
             }
         }
     }
@@ -102,14 +102,17 @@ class LibraryActivity : AppCompatActivity() {
                     val user = auth.currentUser
                     Log.d(TAG, "${user.toString()}")
 
+                    //Update UserData to Firebase, if not present any. Else populate the UI with library
                     db = Firebase.firestore
                     val userObj = UserData(user!!.displayName, mapOf(Pair("init", "init")))
                     db.collection("userData").document(user.uid).get().addOnSuccessListener{ doc ->
                         Log.d(TAG, "${doc.toString()}")
                         if (doc.data == null){
+                            //write UserData to Firebase
                             db.collection("userData").document(user.uid).set(userObj)
                         }
                         else{
+                            //display library
                             populateLibrary()
                         }
                     }
@@ -117,28 +120,33 @@ class LibraryActivity : AppCompatActivity() {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     // ...
-                    //Snackbar.make(view, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
-                    //updateUI(null)
+                    Toast.makeText(applicationContext, "Sign In failed", Toast.LENGTH_SHORT).show()
                 }
 
                 // ...
             }
     }
 
+    private fun getLibrary(snapshot: DocumentSnapshot): Map<String, String> {
+        //get Library Map from Firebase
+        var libData = snapshot.get("library") as Map<String, String>
+        //don't consider init key
+        return libData.filterKeys { key-> key != "init" }
+    }
+
     //call it after authentication only
     private fun populateLibrary(){
-
+        //init the request queue
         if(queue == null)
             queue = Volley.newRequestQueue(applicationContext)
 
+        //get the library
         db.collection("userData").document(auth.currentUser!!.uid).
             get().addOnSuccessListener{
-            var libData = it.get("library") as Map<String, String>
-            libData = libData.filterKeys { key-> key != "init" }
-            Log.d(TAG, libData.toString())
+            //get a mutable list of game ID's
+            library = getLibrary(it).keys.toMutableList()
 
-            library = libData.keys.toMutableList()
-
+            //prepare the recycler view
             viewManager = LinearLayoutManager(this)
             viewAdapter = LibraryAdapter(library, db, auth.uid!!, queue!!, this)
 
@@ -146,27 +154,21 @@ class LibraryActivity : AppCompatActivity() {
                 layoutManager = viewManager
                 adapter = viewAdapter
             }
-
-
         }.addOnFailureListener(){}
     }
 
     private fun refreshLibrary(){
         db.collection("userData").document(auth.currentUser!!.uid).
         get().addOnSuccessListener{
-            var libData = it.get("library") as Map<String, String>
-            libData = libData.filterKeys { key-> key != "init" }
-            Log.d(TAG, libData.toString())
-
             library.clear()
-
-            library.addAll(libData.keys.toMutableList())
+            library.addAll(getLibrary(it).keys.toMutableList())
+            //notify the adapter
             viewAdapter.notifyDataSetChanged()
         }
     }
 
     override fun onRestart() {
-        //REFRESH DATA
+        //Refresh Library
         super.onRestart()
         refreshLibrary()
     }
