@@ -1,8 +1,10 @@
 package com.example.gamelibrary.search
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
@@ -12,7 +14,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.game_element.view.*
 
-class GameSearchAdapter (private val gameList: MutableList<Game?>, private val db: FirebaseFirestore, private val userId: String)
+class GameSearchAdapter (private val gameList: MutableList<Game?>,
+                         private val db: FirebaseFirestore,
+                         private val userId: String,
+                         private val context: Context)
     :RecyclerView.Adapter<GameViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
@@ -43,7 +48,7 @@ class GameSearchAdapter (private val gameList: MutableList<Game?>, private val d
                     val library = userData.get("library") as Map<String, String>
 
                     if (library.containsKey(game.id.toString()))
-                        setImageResource(R.drawable.ic_baseline_check_24)
+                        setImageResource(R.drawable.ic_baseline_remove_24)
                     else
                         setImageResource(R.drawable.ic_baseline_add_24)
                 }
@@ -56,21 +61,26 @@ class GameSearchAdapter (private val gameList: MutableList<Game?>, private val d
                     db.collection("userData").document(userId).get().addOnSuccessListener {userData ->
 
                         val library = userData.get("library") as Map<String, String>
+
+                        //remove game
                         if(library.containsKey(game.id.toString())){
                             db.collection("userData").document(userId).update(hashMapOf<String,Any>(
                                 "library."+game.id.toString() to FieldValue.delete()
                             ))
                             setImageResource(R.drawable.ic_baseline_add_24)
+                            Toast.makeText(context, "Game removed from library", Toast.LENGTH_SHORT).show()
                         }
-                        else{
+                        else{//add game
                             db.collection("userData").document(userId).update(mapOf(
                                 "library."+game.id.toString() to game.name
                             ))
-                            setImageResource(R.drawable.ic_baseline_check_24)
+                            setImageResource(R.drawable.ic_baseline_remove_24)
+                            Toast.makeText(context, "Game added to library", Toast.LENGTH_SHORT).show()
+
                         }
 
                     }.addOnFailureListener{
-
+                        Toast.makeText(context, "Task Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
