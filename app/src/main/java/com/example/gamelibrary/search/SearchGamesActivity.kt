@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -39,6 +40,7 @@ class SearchGamesActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var user : FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private lateinit var db :FirebaseFirestore
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,17 +53,22 @@ class SearchGamesActivity : AppCompatActivity() {
         //init a request queue
         queue = Volley.newRequestQueue(this)
 
+        swipeRefreshLayout = findViewById(R.id.search_refresh_layout)
+        swipeRefreshLayout.isRefreshing = true
+
         //intercept the query, if any
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
                 //perform the custom search
+                setRefreshListener(query, false)
                 search(query, page,false)
+
             }
         }
         else {//perform the default search
+            setRefreshListener(null, true)
             search(null, page,true)
         }
-
     }
 
     //state again the onCreate behavior since this is a single-top activity
@@ -70,12 +77,17 @@ class SearchGamesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search_games)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        swipeRefreshLayout = findViewById(R.id.search_refresh_layout)
+        swipeRefreshLayout.isRefreshing = true
+
         if (Intent.ACTION_SEARCH == intent?.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                setRefreshListener(query, false)
                 search(query, page,false)
             }
         }
         else {
+            setRefreshListener(null, false)
             search(null, page,true)
         }
     }
@@ -140,10 +152,22 @@ class SearchGamesActivity : AppCompatActivity() {
                 adapter = viewAdapter
             }
 
+            swipeRefreshLayout.isRefreshing = false
 
         }, Response.ErrorListener { Log.d(TAG, "didn't work") })
 
         //Add query to queue
         queue.add(queryRequest)
+    }
+
+    //set refresh layout listener and color for progressbar
+    private fun setRefreshListener(query: String?, defaultQuery: Boolean){
+        swipeRefreshLayout.apply {
+            setOnRefreshListener {
+                search(query, page, defaultQuery)
+                isRefreshing = false
+            }
+            setColorSchemeResources(R.color.colorPrimary)
+        }
     }
 }
