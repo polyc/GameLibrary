@@ -27,27 +27,32 @@ class GameDetailsFragment(private val game: Game): Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        //Set game image
         view.findViewById<ImageView>(R.id.background_image_details).apply {
             Picasso.get().load(game.backgroundImage).fit().noFade().into(this)
         }
 
+        //Set release date
         view.findViewById<TextView>(R.id.release_date).apply {
             text = game.releaseDate
         }
 
+        //set playtime
         view.findViewById<TextView>(R.id.avg_playtime).apply {
             text = game.averagePlaytime.toString()+ " Hours"
         }
 
+        //set developer
         view.findViewById<TextView>(R.id.developer).apply {
             text = game.developer
         }
 
+        //set publisher
         view.findViewById<TextView>(R.id.publisher).apply {
             text = game.publisher
         }
 
-
+        //set description
         view.findViewById<WebView>(R.id.game_description).apply {
             setOnTouchListener { _, motionEvent ->
                 (motionEvent.action == MotionEvent.ACTION_MOVE)

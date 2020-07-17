@@ -19,14 +19,17 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
         setSupportActionBar(findViewById(R.id.library_toolbar))
 
+        //retrieve Json String From SharedPreferences
         val gameID: String = intent.extras?.getString("gameID")!!
         val sharedPref = getSharedPreferences("Library", Context.MODE_PRIVATE)
         val gameJson = JSONObject(sharedPref.getString(gameID, "Error")!!)
 
-        val id = gameJson.getInt("id")
+        //Setup appbar title with game name
         val name = gameJson.getString("name")
         supportActionBar?.title = name
 
+        //Parse all other relevant fields
+        val id = gameJson.getInt("id")
         val backgroundImage = gameJson.getString("background_image")
 
         var metacriticRating: Int? = null
@@ -49,11 +52,11 @@ class GameActivity : AppCompatActivity() {
         val publisher = publishers[publishers.length()-1] as JSONObject
         val pubName = publisher.getString("name")
 
-        //ADD OTHER FIELDS TO OBJECT
+        //instantiate the game data object
         val game = Game(name, id, backgroundImage, metacriticRating, description,
             website, releaseDate, averagePlaytime,devName, pubName)
 
-
+        //Setup the TabLayout
         val tabLayout :TabLayout = findViewById(R.id.tab_layout)
         tabLayout.addTab(tabLayout.newTab().setText("Details"))
         tabLayout.addTab(tabLayout.newTab().setText("Reddit Feed"))
@@ -61,13 +64,14 @@ class GameActivity : AppCompatActivity() {
 
         //Log.d(TAG, "${game.toString()}")
 
+        //Setup the ViewPager
         val numOfTabs = 2
         val viewPager = findViewById<ViewPager2>(R.id.pager)
         val pageAdapter: GameTabAdapter = GameTabAdapter(supportFragmentManager, lifecycle, numOfTabs, game)
         viewPager.adapter = pageAdapter
 
 
-
+        //Add the possibility to directly select the tab
         tabLayout.addOnTabSelectedListener(object :
             OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
