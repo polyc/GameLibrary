@@ -53,10 +53,16 @@ class LibraryActivity : AppCompatActivity() {
 
         // Build a GoogleSignInClient with the options specified by gso.
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        signIn()
 
         // Initialize Firebase Auth
         auth = Firebase.auth
+
+        //check if the user has already logged in
+        val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
+        if(signInAccount == null)
+            signIn()
+        else
+            firebaseAuthWithGoogle(signInAccount.idToken!!)
 
         //setup a listener for addGames button
         findViewById<FloatingActionButton>(R.id.addGames).setOnClickListener{
@@ -109,11 +115,13 @@ class LibraryActivity : AppCompatActivity() {
                         if (doc.data == null){
                             //write UserData to Firebase
                             db.collection("userData").document(user.uid).set(userObj)
-                            populateLibrary()
+                            db.collection("userData").document(user.uid).get().addOnSuccessListener{ doc ->
+                                populateLibrary(doc)
+                            }
                         }
                         else{
                             //display library
-                            populateLibrary()
+                            populateLibrary(doc)
                         }
                     }
                 } else {
@@ -135,26 +143,22 @@ class LibraryActivity : AppCompatActivity() {
     }
 
     //call it after authentication only
-    private fun populateLibrary(){
+    private fun populateLibrary(doc: DocumentSnapshot){
         //init the request queue
         if(queue == null)
             queue = Volley.newRequestQueue(applicationContext)
 
-        //get the library
-        db.collection("userData").document(auth.currentUser!!.uid).
-            get().addOnSuccessListener{
-            //get a mutable list of game ID's
-            library = getLibrary(it).keys.toMutableList()
+        //get a mutable list of game ID's
+        library = getLibrary(doc).keys.toMutableList()
 
-            //prepare the recycler view
-            viewManager = LinearLayoutManager(this)
-            viewAdapter = LibraryAdapter(library, db, auth.uid!!, queue!!, this)
+        //prepare the recycler view
+        viewManager = LinearLayoutManager(this)
+        viewAdapter = LibraryAdapter(library, db, auth.uid!!, queue!!, this)
 
-            recyclerView = findViewById<RecyclerView>(R.id.library_recycler_view).apply{
-                layoutManager = viewManager
-                adapter = viewAdapter
-            }
-        }.addOnFailureListener(){}
+        recyclerView = findViewById<RecyclerView>(R.id.library_recycler_view).apply {
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
     }
 
     private fun refreshLibrary(){
