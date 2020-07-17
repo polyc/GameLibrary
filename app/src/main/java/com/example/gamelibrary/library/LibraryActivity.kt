@@ -37,7 +37,6 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var queue: RequestQueue? = null
     private lateinit var library :MutableList<String>
-
     private lateinit var  googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,6 +109,7 @@ class LibraryActivity : AppCompatActivity() {
                         if (doc.data == null){
                             //write UserData to Firebase
                             db.collection("userData").document(user.uid).set(userObj)
+                            populateLibrary()
                         }
                         else{
                             //display library
