@@ -2,6 +2,7 @@ package com.example.gamelibrary.game
 
 import android.content.Context
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gamelibrary.R
@@ -27,6 +28,7 @@ class GameActivity : AppCompatActivity() {
         //Setup appbar title with game name
         val name = gameJson.getString("name")
         supportActionBar?.title = name
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         //Parse all other relevant fields
         val id = gameJson.getInt("id")
@@ -87,5 +89,14 @@ class GameActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            finish()
+            return true
+        }
+        else
+            return super.onOptionsItemSelected(item)
     }
 }

@@ -13,4 +13,9 @@
         </item>
     </style>
 
+    <!-- SupportActionBar Text Color -->
+    <style name="SupportActionBarTheme" parent="AppTheme">
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
 </resources>
