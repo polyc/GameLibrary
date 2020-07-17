@@ -79,7 +79,7 @@
                     android:layout_alignBottom="@id/background_image"
                     android:layout_marginBottom="10sp"
                     android:layout_marginStart="5dp"
-                    android:src="@drawable/ic_baseline_remove_circle_24" />
+                    android:src="@drawable/ic_baseline_remove_24" />
 
             </RelativeLayout>
 
