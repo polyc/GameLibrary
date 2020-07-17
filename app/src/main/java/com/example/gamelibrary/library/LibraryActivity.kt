@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.R
@@ -26,7 +27,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 const val RC_SIGN_IN = 1
-const val TAG = "GoogleSingIn"
+const val TAG = "GoogleSignIn"
 
 class LibraryActivity : AppCompatActivity() {
 
@@ -38,6 +39,7 @@ class LibraryActivity : AppCompatActivity() {
     private var queue: RequestQueue? = null
     private lateinit var library :MutableList<String>
     private lateinit var  googleSignInClient: GoogleSignInClient
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -59,7 +61,7 @@ class LibraryActivity : AppCompatActivity() {
 
         //check if the user has already logged in
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
-        if(signInAccount == null)
+        if(signInAccount == null || signInAccount.isExpired)
             signIn()
         else
             firebaseAuthWithGoogle(signInAccount.idToken!!)
@@ -69,6 +71,17 @@ class LibraryActivity : AppCompatActivity() {
             val intent = Intent(this, SearchGamesActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent)
+        }
+
+        //set refresh layout listener and color for progressbar
+        swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.library_refresh_layout)
+        swipeRefreshLayout.isRefreshing = true
+        swipeRefreshLayout.apply {
+            setOnRefreshListener {
+                refreshLibrary()
+                isRefreshing = false
+            }
+            setColorSchemeResources(R.color.colorPrimary)
         }
     }
     private fun signIn() {
@@ -159,6 +172,7 @@ class LibraryActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = viewAdapter
         }
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun refreshLibrary(){
@@ -169,11 +183,13 @@ class LibraryActivity : AppCompatActivity() {
             //notify the adapter
             viewAdapter.notifyDataSetChanged()
         }
+        swipeRefreshLayout.isRefreshing = false
     }
 
     override fun onRestart() {
         //Refresh Library
         super.onRestart()
+        swipeRefreshLayout.isRefreshing = true
         refreshLibrary()
     }
 }
