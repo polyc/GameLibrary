@@ -14,7 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.game_element.view.*
 
-class GameSearchAdapter (private val gameList: MutableList<Game?>,
+class GameSearchAdapter (val gameList: MutableList<Game?>,
                          private val db: FirebaseFirestore,
                          private val userId: String,
                          private val context: Context)

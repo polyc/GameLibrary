@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -33,19 +34,22 @@ const val url = "https://api.rawg.io/api/"
 
 class SearchGamesActivity : AppCompatActivity() {
 
-    private var page =  1
     private lateinit var queue: RequestQueue
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<GameViewHolder>
+    private var viewAdapter: RecyclerView.Adapter<GameViewHolder>? = null
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var user : FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private lateinit var db :FirebaseFirestore
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private var scrollListner: EndlessRecyclerViewScrollListner? = null
+    private var query: String? = null
+    private var defaultQuery = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_games)
         setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         //get the db reference
         db = Firebase.firestore
@@ -59,15 +63,19 @@ class SearchGamesActivity : AppCompatActivity() {
         //intercept the query, if any
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                this.query = query
+                defaultQuery = false
                 //perform the custom search
-                setRefreshListener(query, false)
-                search(query, page,false)
+                setRefreshListener(this.query, defaultQuery)
+                search(this.query, defaultQuery)
 
             }
         }
         else {//perform the default search
-            setRefreshListener(null, true)
-            search(null, page,true)
+            this.query = null
+            defaultQuery = true
+            setRefreshListener(this.query, defaultQuery)
+            search(this.query, defaultQuery)
         }
     }
 
@@ -76,19 +84,24 @@ class SearchGamesActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setContentView(R.layout.activity_search_games)
         setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         swipeRefreshLayout = findViewById(R.id.search_refresh_layout)
         swipeRefreshLayout.isRefreshing = true
 
         if (Intent.ACTION_SEARCH == intent?.action) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                setRefreshListener(query, false)
-                search(query, page,false)
+                this.query = query
+                defaultQuery = false
+                setRefreshListener(this.query, defaultQuery)
+                search(this.query, defaultQuery)
             }
         }
         else {
-            setRefreshListener(null, false)
-            search(null, page,true)
+            this.query = null
+            defaultQuery = true
+            setRefreshListener(this.query, defaultQuery)
+            search(this.query, defaultQuery)
         }
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -103,7 +116,7 @@ class SearchGamesActivity : AppCompatActivity() {
             // Assumes current activity is the searchable activity
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
-            //Theme text
+            //Theme hint text text
             this.findViewById<EditText>(androidx.appcompat.R.id.search_src_text).apply {
                 setTextColor(Color.WHITE)
                 setHintTextColor(Color.WHITE)
@@ -112,8 +125,46 @@ class SearchGamesActivity : AppCompatActivity() {
         return true
     }
 
-    private fun search(query :String?, page :Int, defaultQuery: Boolean = true){
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            finish()
+            return true
+        }
+        else
+            return super.onOptionsItemSelected(item)
+    }
+
+    private fun search(query :String?, defaultQuery: Boolean = true){
+        if(viewAdapter != null)
+            (viewAdapter as GameSearchAdapter).apply {
+                gameList.clear()
+                notifyDataSetChanged()
+            }
+
+        if (scrollListner != null)
+            scrollListner?.resetState()
+
         //prepare the query for API
+        val q =
+            if(defaultQuery){
+                "games"
+            }
+            else {
+                "games?search=$query"
+            }
+
+        //Setup the request
+        val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
+            val gameList = parseResult(response)
+            setupRecyclerView(gameList)
+            swipeRefreshLayout.isRefreshing = false
+        }, Response.ErrorListener { Log.d(TAG, "didn't work") })
+
+        //Add query to queue
+        queue.add(queryRequest)
+    }
+
+    private fun loadMoreSearch(query :String?, page :Int, defaultQuery: Boolean = true, totalItemsCount: Int){
         val q =
             if(defaultQuery){
                 "games?page=$page"
@@ -122,37 +173,11 @@ class SearchGamesActivity : AppCompatActivity() {
 
         //Setup the request
         val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
-            val obj:JSONObject = JSONObject(response)
-            //get the "results" from the response object
-            val array: JSONArray = obj.getJSONArray("results")
-            //init the adapter list
-            val gameList :MutableList<Game?> = mutableListOf()
-
-            //parse the JSONArray
-            for (game_idx in 0 until array.length()-1) {
-                val game: JSONObject = array[game_idx] as JSONObject
-                val name = game.get("name").toString()
-                val id = game.get("id") as Int
-                val backgroundImage: String? = game.get("background_image").toString()
-
-                var metacriticRating :Int? = null
-                if(!game.isNull("metacritic"))
-                    metacriticRating = game.get("metacritic") as Int?
-                //populate the adapter list
-                gameList.add(Game(name, id, backgroundImage, metacriticRating))
+            val gameList = parseResult(response)
+            (viewAdapter as GameSearchAdapter).apply {
+                this.gameList.addAll(gameList)
+                notifyItemRangeInserted(totalItemsCount, gameList.size)
             }
-
-            //Setup the RecyclerView
-            viewManager = LinearLayoutManager(this)
-            viewAdapter = GameSearchAdapter(gameList, db, user!!.uid, applicationContext)
-
-            recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply{
-                setHasFixedSize(true)
-                layoutManager = viewManager
-                adapter = viewAdapter
-            }
-
-            swipeRefreshLayout.isRefreshing = false
 
         }, Response.ErrorListener { Log.d(TAG, "didn't work") })
 
@@ -160,11 +185,53 @@ class SearchGamesActivity : AppCompatActivity() {
         queue.add(queryRequest)
     }
 
+    private fun setupRecyclerView(gameList: MutableList<Game?>){
+        //Setup the RecyclerView
+        viewManager = LinearLayoutManager(this)
+        viewAdapter = GameSearchAdapter(gameList, db, user!!.uid, applicationContext)
+
+        recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply{
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+
+        scrollListner = object: EndlessRecyclerViewScrollListner(viewManager as LinearLayoutManager){
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                loadMoreSearch(query, page, defaultQuery, totalItemsCount)
+            }
+        }
+
+        recyclerView.addOnScrollListener(scrollListner as EndlessRecyclerViewScrollListner)
+    }
+
+    private fun parseResult(response: String): MutableList<Game?>{
+        val obj:JSONObject = JSONObject(response)
+        //get the "results" from the response object
+        val array: JSONArray = obj.getJSONArray("results")
+        //init the adapter list
+        val gameList :MutableList<Game?> = mutableListOf()
+
+        //parse the JSONArray
+        for (game_idx in 0 until array.length()-1) {
+            val game: JSONObject = array[game_idx] as JSONObject
+            val name = game.get("name").toString()
+            val id = game.get("id") as Int
+            val backgroundImage: String? = game.get("background_image").toString()
+
+            var metacriticRating: Int? = null
+            if (!game.isNull("metacritic"))
+                metacriticRating = game.get("metacritic") as Int?
+            //populate the adapter list
+            gameList.add(Game(name, id, backgroundImage, metacriticRating))
+        }
+        return gameList
+    }
+
     //set refresh layout listener and color for progressbar
     private fun setRefreshListener(query: String?, defaultQuery: Boolean){
         swipeRefreshLayout.apply {
             setOnRefreshListener {
-                search(query, page, defaultQuery)
+                search(query, defaultQuery)
                 isRefreshing = false
             }
             setColorSchemeResources(R.color.colorPrimary)
