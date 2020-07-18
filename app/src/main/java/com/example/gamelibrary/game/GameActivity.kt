@@ -47,13 +47,20 @@ class GameActivity : AppCompatActivity() {
             averagePlaytime = gameJson.getInt("playtime")
 
         val developers = gameJson.getJSONArray("developers")
-        val developer = developers[0] as JSONObject
-        val devName = developer.getString("name")
+        var devName: String? = null
+        if (developers.length() != 0) {
+            val developer = developers[0] as JSONObject
+            devName = developer.getString("name")
+        }
+
 
         val publishers = gameJson.getJSONArray("publishers")
-        val publisher = publishers[publishers.length()-1] as JSONObject
-        val pubName = publisher.getString("name")
-
+        var pubName: String? = null
+        if (publishers.length() != 0){
+            val publisher = publishers[publishers.length()-1] as JSONObject
+            pubName = publisher.getString("name")
+        }
+        
         //instantiate the game data object
         val game = Game(name, id, backgroundImage, metacriticRating, description,
             website, releaseDate, averagePlaytime,devName, pubName)
