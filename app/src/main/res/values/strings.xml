@@ -5,4 +5,5 @@
     <string name="empty_name">\"No Name\"</string>
     <string name="metacritic_logo">Metacritic Logo</string>
     <string name="videogame_image_background">videogame image background</string>
+    <string name="action_settings">Settings</string>
 </resources>

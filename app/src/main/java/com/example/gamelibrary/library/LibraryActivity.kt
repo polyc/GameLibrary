@@ -3,6 +3,8 @@ package com.example.gamelibrary.library
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +15,7 @@ import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.UserData
 import com.example.gamelibrary.search.SearchGamesActivity
+import com.example.gamelibrary.settings.SettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -45,7 +48,7 @@ class LibraryActivity : AppCompatActivity() {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_library)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(findViewById(R.id.library_toolbar))
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -192,5 +195,25 @@ class LibraryActivity : AppCompatActivity() {
         swipeRefreshLayout.isRefreshing = true
         refreshLibrary()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        val inflater = menuInflater
+        //inflate the search_menu library_menu.xml
+        inflater.inflate(R.menu.library_menu, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.library_action_settings -> {
+            startActivity(Intent(applicationContext, SettingsActivity::class.java))
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
 }
 

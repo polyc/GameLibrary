@@ -20,6 +20,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
+import com.example.gamelibrary.settings.SettingsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -107,8 +108,8 @@ class SearchGamesActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         val inflater = menuInflater
-        //inflate the menu from menu.xml
-        inflater.inflate(R.menu.menu, menu)
+        //inflate the search_menu from search_menu.xml
+        inflater.inflate(R.menu.search_menu, menu)
 
         //Init the search widget
         val searchManager = getSystemService(android.content.Context.SEARCH_SERVICE) as SearchManager
@@ -125,13 +126,16 @@ class SearchGamesActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == android.R.id.home){
+    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId){
+        android.R.id.home -> {
             finish()
-            return true
+            true
         }
-        else
-            return super.onOptionsItemSelected(item)
+        R.id.search_action_settings -> {
+            startActivity(Intent(applicationContext, SettingsActivity::class.java))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun search(query :String?, defaultQuery: Boolean = true){

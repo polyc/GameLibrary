@@ -13,7 +13,7 @@
         android:layout_height="55dp"
         android:elevation="4dp"
         android:background="@color/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:theme="@style/SupportActionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="#FFFFFF"
         app:subtitleTextColor="#FFFFFF"
