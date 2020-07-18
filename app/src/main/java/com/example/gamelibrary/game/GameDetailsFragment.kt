@@ -1,6 +1,9 @@
 package com.example.gamelibrary.game
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -29,12 +32,16 @@ class GameDetailsFragment(private val game: Game): Fragment() {
 
         //Set game image
         view.findViewById<ImageView>(R.id.background_image_details).apply {
-            Picasso.get().load(game.backgroundImage).fit().noFade().into(this)
+            val backgroundImage = game.backgroundImage
+            if (backgroundImage != null)
+                Picasso.get().load(backgroundImage).fit().noFade().into(this)
         }
 
         //Set release date
         view.findViewById<TextView>(R.id.release_date).apply {
-            text = game.releaseDate
+            val release = game.releaseDate
+            if (release != "null")
+                text = release
         }
 
         //set playtime
@@ -44,12 +51,33 @@ class GameDetailsFragment(private val game: Game): Fragment() {
 
         //set developer
         view.findViewById<TextView>(R.id.developer).apply {
-            text = game.developer
+            val developer = game.developer
+            if (developer != null)
+                text = game.developer
         }
 
         //set publisher
         view.findViewById<TextView>(R.id.publisher).apply {
-            text = game.publisher
+            val publisher = game.publisher
+            if (publisher != null)
+                text = game.publisher
+        }
+
+        //set website
+        view.findViewById<TextView>(R.id.website).apply {
+            val website = game.website
+            if (website!!.isNotEmpty()) {
+                text = website
+                setTextColor(resources.getColor(android.R.color.holo_blue_bright))
+                paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                isClickable = true
+                setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(text.toString()))
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        startActivity(intent)
+                    }
+                }
+            }
         }
 
         //set description
