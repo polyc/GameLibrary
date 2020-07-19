@@ -17,6 +17,7 @@ import com.example.gamelibrary.data.UserData
 import com.example.gamelibrary.search.SearchGamesActivity
 import com.example.gamelibrary.settings.SettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -43,6 +44,7 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var library :MutableList<String>
     private lateinit var  googleSignInClient: GoogleSignInClient
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var userObj: UserData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -67,7 +69,7 @@ class LibraryActivity : AppCompatActivity() {
         if(signInAccount == null || signInAccount.isExpired)
             signIn()
         else
-            firebaseAuthWithGoogle(signInAccount.idToken!!)
+            firebaseAuthWithGoogle(signInAccount!!)
 
         //setup a listener for addGames button
         findViewById<FloatingActionButton>(R.id.addGames).setOnClickListener{
@@ -105,7 +107,7 @@ class LibraryActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                 //Perform authentication
-                firebaseAuthWithGoogle(account.idToken!!)
+                firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
@@ -113,8 +115,8 @@ class LibraryActivity : AppCompatActivity() {
         }
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -125,9 +127,8 @@ class LibraryActivity : AppCompatActivity() {
 
                     //Update UserData to Firebase, if not present any. Else populate the UI with library
                     db = Firebase.firestore
-                    val userObj = UserData(user!!.displayName, mapOf(Pair("init", "init")))
-                    db.collection("userData").document(user.uid).get().addOnSuccessListener{ doc ->
-                        Log.d(TAG, "${doc.toString()}")
+                    userObj = UserData(account.givenName, account.familyName, account.email, mapOf(Pair("init", "init")))
+                    db.collection("userData").document(user!!.uid).get().addOnSuccessListener{ doc ->
                         if (doc.data == null){
                             //write UserData to Firebase
                             db.collection("userData").document(user.uid).set(userObj)
