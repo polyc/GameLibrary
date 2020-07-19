@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".settings.SettingsActivity"
-    android:theme="@style/AppTheme">
+    android:theme="@style/AppTheme"
+    android:orientation="vertical">
 
   <androidx.appcompat.widget.Toolbar
       android:id="@+id/settings_toolbar"
@@ -18,6 +19,20 @@
       app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
       app:titleTextColor="#FFFFFF"
       app:subtitleTextColor="#FFFFFF"
-      app:title="@string/app_name"/>
+      app:title="Settings"/>
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:id="@+id/settings_scroll">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        android:id="@+id/setting_card">
+    </androidx.cardview.widget.CardView>
+
+  </ScrollView>
 
   </LinearLayout>

@@ -16,9 +16,11 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
-        val inflater = menuInflater
-        //inflate the search_menu library_menu.xml
-        inflater.inflate(R.menu.library_menu, menu)
+
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.setting_card, SettingsFragment())
+            .commit()
 
         return true
     }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:key="user_data"
+        app:title="Your Data">
+
+        <EditTextPreference
+            app:key="name"
+            app:title="Name"/>
+
+        <EditTextPreference
+            app:key="surname"
+            app:title="Surname"/>
+
+        <EditTextPreference
+            app:key="email"
+            app:title="E-Mail"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="layout"
+        app:title="Layout">
+
+        <SwitchPreference
+            app:key="feed_first"
+            app:title="Feed First"
+            app:summary="Display the Reddit feed before the game details"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

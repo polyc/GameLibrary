@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
@@ -66,9 +67,14 @@ class GameActivity : AppCompatActivity() {
             website, releaseDate, averagePlaytime,devName, pubName)
 
         //Setup the TabLayout
+        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val feedFirst = pref.getBoolean("feed_first", false)
+        val first = if (feedFirst) { "Reddit Feed"} else{"Details"}
+        val second = if (feedFirst){ "Details"} else {"Reddit Feed"}
+
         val tabLayout :TabLayout = findViewById(R.id.tab_layout)
-        tabLayout.addTab(tabLayout.newTab().setText("Details"))
-        tabLayout.addTab(tabLayout.newTab().setText("Reddit Feed"))
+        tabLayout.addTab(tabLayout.newTab().setText(first))
+        tabLayout.addTab(tabLayout.newTab().setText(second))
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         //Log.d(TAG, "${game.toString()}")
@@ -76,7 +82,7 @@ class GameActivity : AppCompatActivity() {
         //Setup the ViewPager
         val numOfTabs = 2
         val viewPager = findViewById<ViewPager2>(R.id.pager)
-        val pageAdapter: GameTabAdapter = GameTabAdapter(supportFragmentManager, lifecycle, numOfTabs, game)
+        val pageAdapter: GameTabAdapter = GameTabAdapter(supportFragmentManager, lifecycle, numOfTabs, game, feedFirst)
         viewPager.adapter = pageAdapter
 
 

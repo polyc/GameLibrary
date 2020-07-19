@@ -16,7 +16,8 @@
         android:theme="@style/SupportActionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="#FFFFFF"
-        app:subtitleTextColor="#FFFFFF"/>
+        app:subtitleTextColor="#FFFFFF"
+        app:title="Search"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
