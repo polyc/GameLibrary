@@ -1,4 +1,4 @@
-package com.example.gamelibrary.search
+package com.example.gamelibrary
 
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager

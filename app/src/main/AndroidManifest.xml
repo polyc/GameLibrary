@@ -15,7 +15,7 @@
         </activity>
         <activity android:name=".game.GameActivity" />
         <activity
-            android:name=".search.SearchGamesActivity"
+            android:name=".search.SearchActivity"
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

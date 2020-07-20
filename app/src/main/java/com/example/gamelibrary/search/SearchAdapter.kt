@@ -14,18 +14,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.game_element.view.*
 
-class GameSearchAdapter (val gameList: MutableList<Game?>,
-                         private val db: FirebaseFirestore,
-                         private val userId: String,
-                         private val context: Context)
-    :RecyclerView.Adapter<GameViewHolder>(){
+class SearchAdapter (val gameList: MutableList<Game?>,
+                     private val db: FirebaseFirestore,
+                     private val userId: String,
+                     private val context: Context)
+    :RecyclerView.Adapter<SearchViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val itemView: View = LayoutInflater.from(parent.context).inflate(R.layout.game_element, parent, false)
-        return GameViewHolder(itemView)
+        return SearchViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: GameViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         val game: Game? = gameList[position]
         if(game != null){
             //set game title

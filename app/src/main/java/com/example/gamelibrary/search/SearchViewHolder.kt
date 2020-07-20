@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gamelibrary.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class GameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class SearchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val card : CardView = itemView.findViewById(R.id.card_view)
     val title : TextView = itemView.findViewById(R.id.name)
     val metacritic : TextView = itemView.findViewById(R.id.metacritic)

@@ -18,6 +18,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.gamelibrary.EndlessRecyclerViewScrollListner
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
 import com.example.gamelibrary.settings.SettingsActivity
@@ -33,11 +34,11 @@ const val TAG = "Search"
 
 const val url = "https://api.rawg.io/api/"
 
-class SearchGamesActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var queue: RequestQueue
     private lateinit var recyclerView: RecyclerView
-    private var viewAdapter: RecyclerView.Adapter<GameViewHolder>? = null
+    private var viewAdapter: RecyclerView.Adapter<SearchViewHolder>? = null
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var user : FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private lateinit var db :FirebaseFirestore
@@ -140,7 +141,7 @@ class SearchGamesActivity : AppCompatActivity() {
 
     private fun search(query :String?, defaultQuery: Boolean = true){
         if(viewAdapter != null)
-            (viewAdapter as GameSearchAdapter).apply {
+            (viewAdapter as SearchAdapter).apply {
                 gameList.clear()
                 notifyDataSetChanged()
             }
@@ -178,7 +179,7 @@ class SearchGamesActivity : AppCompatActivity() {
         //Setup the request
         val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
             val gameList = parseResult(response)
-            (viewAdapter as GameSearchAdapter).apply {
+            (viewAdapter as SearchAdapter).apply {
                 this.gameList.addAll(gameList)
                 notifyItemRangeInserted(totalItemsCount, gameList.size)
             }
@@ -192,7 +193,7 @@ class SearchGamesActivity : AppCompatActivity() {
     private fun setupRecyclerView(gameList: MutableList<Game?>){
         //Setup the RecyclerView
         viewManager = LinearLayoutManager(this)
-        viewAdapter = GameSearchAdapter(gameList, db, user!!.uid, applicationContext)
+        viewAdapter = SearchAdapter(gameList, db, user!!.uid, applicationContext)
 
         recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply{
             layoutManager = viewManager

@@ -14,7 +14,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.UserData
-import com.example.gamelibrary.search.SearchGamesActivity
+import com.example.gamelibrary.search.SearchActivity
 import com.example.gamelibrary.settings.SettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -73,7 +73,7 @@ class LibraryActivity : AppCompatActivity() {
 
         //setup a listener for addGames button
         findViewById<FloatingActionButton>(R.id.addGames).setOnClickListener{
-            val intent = Intent(this, SearchGamesActivity::class.java)
+            val intent = Intent(this, SearchActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent)
         }
