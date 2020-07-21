@@ -1,6 +1,5 @@
 package com.example.gamelibrary.search
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,7 @@ import kotlinx.android.synthetic.main.game_element.view.*
 
 class SearchAdapter (val gameList: MutableList<Game?>,
                      private val db: FirebaseFirestore,
-                     private val userId: String,
-                     private val context: Context)
+                     private val userId: String)
     :RecyclerView.Adapter<SearchViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
