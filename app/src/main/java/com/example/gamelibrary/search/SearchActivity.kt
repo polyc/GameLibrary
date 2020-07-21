@@ -43,7 +43,7 @@ class SearchActivity : AppCompatActivity() {
     private var user : FirebaseUser? = FirebaseAuth.getInstance().currentUser
     private lateinit var db :FirebaseFirestore
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private var scrollListner: EndlessRecyclerViewScrollListner? = null
+    private var scrollListener: EndlessRecyclerViewScrollListner? = null
     private var query: String? = null
     private var defaultQuery = true
 
@@ -146,8 +146,8 @@ class SearchActivity : AppCompatActivity() {
                 notifyDataSetChanged()
             }
 
-        if (scrollListner != null)
-            scrollListner?.resetState()
+        if (scrollListener != null)
+            scrollListener?.resetState()
 
         //prepare the query for API
         val q =
@@ -193,20 +193,20 @@ class SearchActivity : AppCompatActivity() {
     private fun setupRecyclerView(gameList: MutableList<Game?>){
         //Setup the RecyclerView
         viewManager = LinearLayoutManager(this)
-        viewAdapter = SearchAdapter(gameList, db, user!!.uid, applicationContext)
+        viewAdapter = SearchAdapter(gameList, db, user!!.uid)
 
         recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply{
             layoutManager = viewManager
             adapter = viewAdapter
         }
 
-        scrollListner = object: EndlessRecyclerViewScrollListner(viewManager as LinearLayoutManager){
+        scrollListener = object: EndlessRecyclerViewScrollListner(viewManager as LinearLayoutManager){
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
                 loadMoreSearch(query, page, defaultQuery, totalItemsCount)
             }
         }
 
-        recyclerView.addOnScrollListener(scrollListner as EndlessRecyclerViewScrollListner)
+        recyclerView.addOnScrollListener(scrollListener as EndlessRecyclerViewScrollListner)
     }
 
     private fun parseResult(response: String): MutableList<Game?>{
