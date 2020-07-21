@@ -32,7 +32,7 @@ class GameFeedFragment(val game: Game): Fragment() {
     private lateinit var recyclerView: RecyclerView
     private var viewAdapter: RecyclerView.Adapter<PostViewHolder>? = null
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var scrollListener: EndlessRecyclerViewScrollListner? = null
     private var query: String? = null
 
@@ -46,6 +46,11 @@ class GameFeedFragment(val game: Game): Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        swipeRefreshLayout = view.findViewById(R.id.feed_refresh_layout)
+        setRefreshListener()
+        swipeRefreshLayout?.isRefreshing = true
+
+
         queue = Volley.newRequestQueue(activity)
 
         query = url + game.id + "/reddit"
@@ -54,12 +59,24 @@ class GameFeedFragment(val game: Game): Fragment() {
     }
 
     private fun getPosts(){
+        if(viewAdapter != null)
+            (viewAdapter as PostAdapter).apply {
+                postList.clear()
+                notifyDataSetChanged()
+            }
+
+        if (scrollListener != null)
+            scrollListener?.resetState()
+
         //get data from API
         val request = JsonObjectRequest(Request.Method.GET, query, null,
             Response.Listener { response ->
                 val postList = parseResult(response)
                 setupRecyclerView(postList)
-            },Response.ErrorListener { Log.d(TAGFRAG, "Unable to get game posts") })
+                swipeRefreshLayout?.isRefreshing = false
+            },Response.ErrorListener {
+                Log.d(TAGFRAG, "Unable to get game posts")
+                swipeRefreshLayout?.isRefreshing = false})
 
         //Add query to queue
         queue.add(request)
@@ -97,6 +114,41 @@ class GameFeedFragment(val game: Game): Fragment() {
         recyclerView.apply {
             layoutManager = viewManager
             adapter = viewAdapter
+        }
+
+        scrollListener = object: EndlessRecyclerViewScrollListner(viewManager as LinearLayoutManager){
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                loadMoreSearch(page, totalItemsCount)
+            }
+        }
+
+        recyclerView.addOnScrollListener(scrollListener as EndlessRecyclerViewScrollListner)
+    }
+
+    private fun loadMoreSearch(page :Int, totalItemsCount: Int){
+        val q = "$query?page=$page"
+
+        //Setup the request
+        val queryRequest = JsonObjectRequest(Request.Method.GET, q, null, Response.Listener { response ->
+            val postList = parseResult(response)
+            (viewAdapter as PostAdapter).apply {
+                this.postList.addAll(postList)
+                notifyItemRangeInserted(totalItemsCount, postList.size)
+            }
+
+        }, Response.ErrorListener { Log.d(com.example.gamelibrary.search.TAG, "didn't work") })
+
+        //Add query to queue
+        queue.add(queryRequest)
+    }
+
+    //set refresh layout listener and color for progressbar
+    private fun setRefreshListener(){
+        swipeRefreshLayout?.apply {
+            setOnRefreshListener {
+                getPosts()
+            }
+            setColorSchemeResources(R.color.colorPrimary)
         }
     }
 }
