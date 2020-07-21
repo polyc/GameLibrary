@@ -156,7 +156,8 @@
                             android:id="@+id/website"
                             android:layout_toEndOf="@id/website_placeholder"
                             android:layout_marginStart="10dp"
-                            android:textSize="17sp"/>
+                            android:textSize="17sp"
+                            android:autoLink="web"/>
                     </RelativeLayout>
 
                 </LinearLayout>
@@ -166,7 +167,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:title="About"
-                app:inner_view="@layout/webview"
+                app:inner_view="@layout/description_webview"
                 app:expandOnClick="true"
                 android:id="@+id/about_card"/>
 

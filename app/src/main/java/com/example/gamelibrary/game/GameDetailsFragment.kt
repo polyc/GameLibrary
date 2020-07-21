@@ -1,9 +1,6 @@
 package com.example.gamelibrary.game
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.graphics.Paint
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -68,15 +65,6 @@ class GameDetailsFragment(private val game: Game): Fragment() {
             val website = game.website
             if (website!!.isNotEmpty()) {
                 text = website
-                setTextColor(resources.getColor(android.R.color.holo_blue_bright))
-                paintFlags = Paint.UNDERLINE_TEXT_FLAG
-                isClickable = true
-                setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(text.toString()))
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        startActivity(intent)
-                    }
-                }
             }
         }
 
