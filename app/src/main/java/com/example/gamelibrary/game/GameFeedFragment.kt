@@ -1,6 +1,8 @@
 package com.example.gamelibrary.game
 
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +24,7 @@ import com.example.gamelibrary.post.PostAdapter
 import com.example.gamelibrary.post.PostViewHolder
 import org.json.JSONArray
 import org.json.JSONObject
+
 
 const val url = "https://api.rawg.io/api/games/"
 
@@ -89,7 +92,7 @@ class GameFeedFragment(val game: Game): Fragment() {
         val postList :MutableList<Post?> = mutableListOf()
 
         //parse the JSONArray
-        for (post_idx in 0 until array.length()-1) {
+        for (post_idx in 0 until array.length()) {
             val post: JSONObject = array[post_idx] as JSONObject
             val name = post.get("name").toString()
             val id = post.getInt("id")
@@ -97,17 +100,17 @@ class GameFeedFragment(val game: Game): Fragment() {
             val url = post.getString("url")
             val username = post.getString("username")
             val usernameUrl = post.getString("username_url")
-            val text = post.getString("text")
+            val text = stripHtml(post.getString("text"))
             val createdAt = post.getString("created")
             //populate the adapter list
-            postList.add(Post(id, name, text, url, username, usernameUrl, createdAt, image))
+            postList.add(Post(id, name, text!!, url, username, usernameUrl, createdAt, image))
         }
         return postList
     }
 
     private fun setupRecyclerView(postList: MutableList<Post?>) {
         //Setup the RecyclerView
-        viewManager = LinearLayoutManager(activity)
+        viewManager = LinearLayoutManager(activity?.applicationContext)
         viewAdapter = PostAdapter(postList)
 
         recyclerView = requireView().findViewById(R.id.feed_recycler_view)
@@ -149,6 +152,14 @@ class GameFeedFragment(val game: Game): Fragment() {
                 getPosts()
             }
             setColorSchemeResources(R.color.colorPrimary)
+        }
+    }
+
+    fun stripHtml(html: String?): String? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString()
+        } else {
+            Html.escapeHtml(html).toString()
         }
     }
 }
