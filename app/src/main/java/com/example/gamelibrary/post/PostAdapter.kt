@@ -6,6 +6,7 @@ import android.net.Uri
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.URLSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -13,6 +14,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Post
+import com.example.gamelibrary.game.TAGFRAG
+import com.squareup.picasso.Picasso
 
 class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostViewHolder>() {
 
@@ -47,14 +50,18 @@ class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostV
             //set post creation date
             val parsedDate = post.format.parse(post.created)
             parsedDate.toString().apply {
-                holder.createdAt.text = subSequence(0, 16).toString() + subSequence(29, length).toString()
+                holder.createdAt.text = "${subSequence(0, 16)}${subSequence(29, length)}"
             }
 
-            /*//set post image
+            //set post image
             val image = post.image
-            if(image.isNotEmpty() || image != "null") {
+            Log.d(TAGFRAG, image)
+            if(image != "null") {
+                holder.postImage.apply {
+                    visibility = View.VISIBLE
+                }
                 Picasso.get().load(post.image).fit().into(holder.postImage)
-            }*/
+            }
 
             //set Reddit post link
             val goReddit: SpannableString = SpannableString("View on Reddit")

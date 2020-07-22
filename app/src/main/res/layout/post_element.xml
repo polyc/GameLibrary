@@ -58,7 +58,7 @@
 
             </RelativeLayout>
 
-            <!--<RelativeLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -66,9 +66,9 @@
                     android:id="@+id/post_image"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:contentDescription="@string/post_image" />
+                    android:visibility="gone"/>
 
-            </RelativeLayout> -->
+            </RelativeLayout>
 
             <com.alespero.expandablecardview.ExpandableCardView
                 android:layout_width="match_parent"

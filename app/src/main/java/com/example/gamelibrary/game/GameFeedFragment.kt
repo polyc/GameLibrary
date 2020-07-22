@@ -93,14 +93,14 @@ class GameFeedFragment(val game: Game): Fragment() {
             val post: JSONObject = array[post_idx] as JSONObject
             val name = post.get("name").toString()
             val id = post.getInt("id")
-            //val image = post.getString("image")
+            val image = post.getString("image")
             val url = post.getString("url")
             val username = post.getString("username")
             val usernameUrl = post.getString("username_url")
             val text = post.getString("text")
             val createdAt = post.getString("created")
             //populate the adapter list
-            postList.add(Post(id, name, text, url, username, usernameUrl, createdAt))
+            postList.add(Post(id, name, text, url, username, usernameUrl, createdAt, image))
         }
         return postList
     }
