@@ -9,7 +9,7 @@ data class Post(val id: Int,
                 val url :String,
                 val username :String,
                 val usernameUrl :String,
-                val created: String?,
+                val created: String,
                 val image: String) {
 
     val format: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ITALY)

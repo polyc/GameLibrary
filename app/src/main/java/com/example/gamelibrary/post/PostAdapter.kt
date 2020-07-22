@@ -26,7 +26,7 @@ class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostV
 
     override fun getItemCount() = postList.size
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = postList[position]
         if(post != null){
@@ -34,7 +34,7 @@ class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostV
             holder.name.text = post.name
 
             //set author nickname
-            val author: SpannableString = SpannableString(post.username.subSequence(3, post.username.length))
+            val author = SpannableString(post.username.subSequence(3, post.username.length))
             val authorUrlSpan = URLSpan(post.usernameUrl)
             author.setSpan(authorUrlSpan, 0, author.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             holder.author.apply {
@@ -49,7 +49,7 @@ class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostV
 
             //set post creation date
             val parsedDate = post.format.parse(post.created)
-            parsedDate.toString().apply {
+            parsedDate!!.toString().apply {
                 holder.createdAt.text = "${subSequence(0, 16)}${subSequence(29, length)}"
             }
 
@@ -64,7 +64,7 @@ class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostV
             }
 
             //set Reddit post link
-            val goReddit: SpannableString = SpannableString("View on Reddit")
+            val goReddit = SpannableString("View on Reddit")
             val urlSpan = URLSpan(post.url)
             goReddit.setSpan(urlSpan, 8, 14, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             holder.goReddit.apply {
@@ -82,7 +82,7 @@ class PostAdapter(val postList: MutableList<Post?>) : RecyclerView.Adapter<PostV
                 setOnTouchListener { _, motionEvent ->
                     (motionEvent.action == MotionEvent.ACTION_MOVE)
                 }
-                settings.defaultTextEncodingName = "utf-8";
+                settings.defaultTextEncodingName = "utf-8"
                 loadData(post.text, "text/html; charset=utf-8", "utf-8")
                 //loadUrl(post.url)
             }
