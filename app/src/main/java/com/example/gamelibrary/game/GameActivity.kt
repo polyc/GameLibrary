@@ -39,7 +39,7 @@ class GameActivity : AppCompatActivity() {
         if(!gameJson.isNull("metacritic"))
             metacriticRating = gameJson.getInt("metacritic")
 
-        val description = gameJson.getString("description_raw")
+        val description = gameJson.getString("description")
         val website = gameJson.getString("website")
         val releaseDate = gameJson.getString("released")
         var averagePlaytime: Int? = null
