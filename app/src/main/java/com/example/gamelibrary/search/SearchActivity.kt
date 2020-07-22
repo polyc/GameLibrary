@@ -217,7 +217,7 @@ class SearchActivity : AppCompatActivity() {
         val gameList :MutableList<Game?> = mutableListOf()
 
         //parse the JSONArray
-        for (game_idx in 0 until array.length()-1) {
+        for (game_idx in 0 until array.length()) {
             val game: JSONObject = array[game_idx] as JSONObject
             val name = game.get("name").toString()
             val id = game.get("id") as Int
