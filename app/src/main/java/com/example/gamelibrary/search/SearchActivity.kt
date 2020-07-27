@@ -24,6 +24,7 @@ import com.example.gamelibrary.data.Game
 import com.example.gamelibrary.settings.SettingsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -79,6 +80,13 @@ class SearchActivity : AppCompatActivity() {
             setRefreshListener(this.query, defaultQuery)
             search(this.query, defaultQuery)
         }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        //handle logout case
+        if(Firebase.auth.uid == null)
+            finish()
     }
 
     //state again the onCreate behavior since this is a single-top activity

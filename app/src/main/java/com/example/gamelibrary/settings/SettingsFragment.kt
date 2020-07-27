@@ -10,6 +10,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+private const val TAG = "Settings"
+
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -17,10 +19,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val namePreference = findPreference<EditTextPreference>("name")
         val surnamePreference = findPreference<EditTextPreference>("surname")
         val emailPreference = findPreference<EditTextPreference>("email")
+        val logoutPreference = findPreference<Preference>("logout_button")
 
         setOnEditTextPreferenceChangeListener(namePreference!!)
         setOnEditTextPreferenceChangeListener(surnamePreference!!)
         setOnEditTextPreferenceChangeListener(emailPreference!!)
+
+        logoutPreference?.setOnPreferenceClickListener {
+            Firebase.auth.signOut()
+            activity?.finish()
+            true
+        }
+
     }
 
     private fun  setOnEditTextPreferenceChangeListener(preference: EditTextPreference){

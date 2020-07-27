@@ -52,6 +52,9 @@ class LibraryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_library)
         setSupportActionBar(findViewById(R.id.library_toolbar))
 
+        // Initialize Firebase Auth
+        auth = Firebase.auth
+
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -61,18 +64,29 @@ class LibraryActivity : AppCompatActivity() {
         // Build a GoogleSignInClient with the options specified by gso.
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // Initialize Firebase Auth
-        auth = Firebase.auth
+        init()
+    }
 
-        //check if the user is already logged in
-        val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
-        if(signInAccount != null && auth.uid != null){
+    override fun onStart() {
+        super.onStart()
+        //handle logout case
+        if(auth.uid == null){
+            setTheme(R.style.AppTheme)
+            setContentView(R.layout.activity_library)
+            setSupportActionBar(findViewById(R.id.library_toolbar))
+            init()
+        }
+    }
+
+    private fun init(){
+        if(auth.uid != null){
             db = Firebase.firestore
             db.collection("userData").document(auth.currentUser!!.uid).get().addOnSuccessListener { doc ->
                 populateLibrary(doc)
             }
         }
-        else
+        else//user is not logged in or has signed out
+            googleSignInClient.signOut()
             signIn()
 
 
@@ -94,6 +108,7 @@ class LibraryActivity : AppCompatActivity() {
             setColorSchemeResources(R.color.colorPrimary)
         }
     }
+
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent,
@@ -196,8 +211,11 @@ class LibraryActivity : AppCompatActivity() {
     override fun onRestart() {
         //Refresh Library
         super.onRestart()
-        swipeRefreshLayout.isRefreshing = true
-        refreshLibrary()
+        //if user didn't logout
+        if (auth.uid != null){
+            swipeRefreshLayout.isRefreshing = true
+            refreshLibrary()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
