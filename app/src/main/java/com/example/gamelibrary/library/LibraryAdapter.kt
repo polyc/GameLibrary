@@ -3,6 +3,7 @@ package com.example.gamelibrary.library
 import android.app.Activity
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,8 @@ class LibraryAdapter(private val gameList: MutableList<String>,
                      private val context: Activity):
     RecyclerView.Adapter<LibraryViewHolder>() {
 
+    var forceRefresh: Boolean = false
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryViewHolder {
         val itemView: View = LayoutInflater.from(parent.context).inflate(R.layout.library_element, parent, false)
         return LibraryViewHolder(itemView)
@@ -41,28 +44,43 @@ class LibraryAdapter(private val gameList: MutableList<String>,
     override fun onBindViewHolder(holder: LibraryViewHolder, position: Int) {
         val pref = context.getSharedPreferences("Library", MODE_PRIVATE)
 
-        if(!pref.contains(gameList[position])){
+        val gameId = gameList[position]
+
+        if(forceRefresh || !pref.contains(gameId)){
             //get data from API
-            val request = JsonObjectRequest(Request.Method.GET, getQuery(gameList[position]), null,
+            val request = JsonObjectRequest(Request.Method.GET, getQuery(gameId), null,
                 Response.Listener { response ->
                     val gameJson: JSONObject = response
+                    val gameString = gameJson.toString()
+
                     //Put the Json String in SharedPreferences (cache API result)
-                    pref.edit().putString(gameList[position], gameJson.toString()).apply()
+                    if(!pref.contains(gameId))
+                        pref.edit().putString(gameId, gameString).apply()
+                    else{
+                        pref.edit().remove(gameId)
+                        pref.edit().putString(gameId, gameString).apply()
+                    }
+
                     //setup the ViewHolder
-                    setHolder(holder, gameJson, position)
+                    setHolder(holder, gameJson, position, pref)
 
-                },Response.ErrorListener { Log.d(TAGLIB, "Unable to get game with gameId:${gameList[position]}") })
-
+                },Response.ErrorListener {
+                    Log.d(TAGLIB, "Unable to get game with gameId:${gameId}, trying with cache")
+                    //setup ViewHolder if there's data in cache
+                    if(pref.contains(gameId))
+                        setHolder(holder, JSONObject(pref.getString(gameId, "")!!), position, pref)
+                })
             queue.add(request)
+            forceRefresh = false
         }
-        else{//game Json String is present in SharedPreferences
-            //setup ViewHolder
-            setHolder(holder, JSONObject(pref.getString(gameList[position], "Item not Found")!!), position)
+        else{
+            //setup ViewHolder if there's data in cache
+            if(pref.contains(gameId))
+                setHolder(holder, JSONObject(pref.getString(gameId, "")!!), position, pref)
         }
-
     }
 
-    private fun setHolder(holder: LibraryViewHolder, game: JSONObject, position: Int){
+    private fun setHolder(holder: LibraryViewHolder, game: JSONObject, position: Int, pref: SharedPreferences){
         //set game title
         holder.itemView.name.text = game.getString("name")
 
@@ -88,6 +106,8 @@ class LibraryAdapter(private val gameList: MutableList<String>,
             //notify the adapter
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount);
+
+            pref.edit().remove(gameList[position])
         }
 
         //setup the details FAB behavior

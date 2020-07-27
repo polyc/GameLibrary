@@ -38,7 +38,7 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<LibraryViewHolder>
+    private lateinit var viewAdapter: LibraryAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var queue: RequestQueue? = null
     private lateinit var library :MutableList<String>
@@ -64,12 +64,17 @@ class LibraryActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
-        //check if the user has already logged in
+        //check if the user is already logged in
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
-        if(signInAccount == null || signInAccount.isExpired)
-            signIn()
+        if(signInAccount != null && auth.uid != null){
+            db = Firebase.firestore
+            db.collection("userData").document(auth.currentUser!!.uid).get().addOnSuccessListener { doc ->
+                populateLibrary(doc)
+            }
+        }
         else
-            firebaseAuthWithGoogle(signInAccount!!)
+            signIn()
+
 
         //setup a listener for addGames button
         findViewById<FloatingActionButton>(R.id.addGames).setOnClickListener{
@@ -79,11 +84,11 @@ class LibraryActivity : AppCompatActivity() {
         }
 
         //set refresh layout listener and color for progressbar
-        swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.library_refresh_layout)
+        swipeRefreshLayout = findViewById(R.id.library_refresh_layout)
         swipeRefreshLayout.isRefreshing = true
         swipeRefreshLayout.apply {
             setOnRefreshListener {
-                refreshLibrary()
+                refreshLibrary(true)
                 isRefreshing = false
             }
             setColorSchemeResources(R.color.colorPrimary)
@@ -144,11 +149,8 @@ class LibraryActivity : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    // ...
                     Toast.makeText(applicationContext, "Sign In failed", Toast.LENGTH_SHORT).show()
                 }
-
-                // ...
             }
     }
 
@@ -179,12 +181,13 @@ class LibraryActivity : AppCompatActivity() {
         swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun refreshLibrary(){
+    private fun refreshLibrary(force: Boolean = false){
         db.collection("userData").document(auth.currentUser!!.uid).
         get().addOnSuccessListener{
             library.clear()
             library.addAll(getLibrary(it).keys.toMutableList())
             //notify the adapter
+            viewAdapter.forceRefresh = force
             viewAdapter.notifyDataSetChanged()
         }
         swipeRefreshLayout.isRefreshing = false
