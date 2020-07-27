@@ -85,10 +85,10 @@ class LibraryActivity : AppCompatActivity() {
                 populateLibrary(doc)
             }
         }
-        else//user is not logged in or has signed out
+        else {//user is not logged in or has signed out
             googleSignInClient.signOut()
             signIn()
-
+        }
 
         //setup a listener for addGames button
         findViewById<FloatingActionButton>(R.id.addGames).setOnClickListener{
