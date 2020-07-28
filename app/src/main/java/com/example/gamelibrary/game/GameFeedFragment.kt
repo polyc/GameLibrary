@@ -1,5 +1,7 @@
 package com.example.gamelibrary.game
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -38,6 +40,8 @@ class GameFeedFragment(val game: Game): Fragment() {
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var scrollListener: EndlessRecyclerViewScrollListner? = null
     private var query: String? = null
+    private var forceRefresh = false
+    private lateinit var pref: SharedPreferences
 
 
     override fun onCreateView(
@@ -53,6 +57,7 @@ class GameFeedFragment(val game: Game): Fragment() {
         setRefreshListener()
         swipeRefreshLayout?.isRefreshing = true
 
+        pref = context?.getSharedPreferences("Post", Context.MODE_PRIVATE)!!
 
         queue = Volley.newRequestQueue(activity)
 
@@ -71,18 +76,42 @@ class GameFeedFragment(val game: Game): Fragment() {
         if (scrollListener != null)
             scrollListener?.resetState()
 
-        //get data from API
-        val request = JsonObjectRequest(Request.Method.GET, query, null,
-            Response.Listener { response ->
-                val postList = parseResult(response)
-                setupRecyclerView(postList)
-                swipeRefreshLayout?.isRefreshing = false
-            },Response.ErrorListener {
-                Log.d(TAG, "Unable to get game posts")
-                swipeRefreshLayout?.isRefreshing = false})
+        val gameId = game.id.toString()
 
-        //Add query to queue
-        queue.add(request)
+        if (forceRefresh || !pref!!.contains(gameId)){
+            //get data from API
+            val request = JsonObjectRequest(Request.Method.GET, query, null,
+                Response.Listener { response ->
+                    val postsJson: JSONObject = response
+                    val postString: String = postsJson.toString()
+
+                    //Put the Json String in SharedPreferences (cache API result)
+                    pref.edit().putString(gameId, postString).apply()
+
+                    //Prepare the recyclerview
+                    val postList = parseResult(response)
+                    setupRecyclerView(postList)
+                    swipeRefreshLayout?.isRefreshing = false },
+                Response.ErrorListener {
+                    Log.d(TAG, "Unable to get game posts of game: $gameId")
+                    //maybe client is offline, get data from cache if any
+                    if (pref!!.contains(gameId)){
+                        val postList = parseResult(JSONObject(pref.getString(gameId, "")!!))
+                        setupRecyclerView(postList)
+                    }
+                    swipeRefreshLayout?.isRefreshing = false})
+
+            //Add query to queue
+            queue.add(request)
+            forceRefresh = false
+        }
+        else{//get data from cache
+            if (pref.contains(gameId)){
+                val postList = parseResult(JSONObject(pref.getString(gameId, "")!!))
+                setupRecyclerView(postList)
+            }
+            swipeRefreshLayout?.isRefreshing = false
+        }
     }
 
     private fun parseResult(response: JSONObject): MutableList<Post?>{
@@ -139,7 +168,7 @@ class GameFeedFragment(val game: Game): Fragment() {
                 notifyItemRangeInserted(totalItemsCount, postList.size)
             }
 
-        }, Response.ErrorListener { Log.d(com.example.gamelibrary.search.TAG, "didn't work") })
+        }, Response.ErrorListener { Log.d(TAG, "Unable to get more posts, client could be offline") })
 
         //Add query to queue
         queue.add(queryRequest)
@@ -149,6 +178,7 @@ class GameFeedFragment(val game: Game): Fragment() {
     private fun setRefreshListener(){
         swipeRefreshLayout?.apply {
             setOnRefreshListener {
+                forceRefresh = true
                 getPosts()
             }
             setColorSchemeResources(R.color.colorPrimary)
