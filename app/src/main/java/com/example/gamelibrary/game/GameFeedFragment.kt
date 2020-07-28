@@ -28,7 +28,7 @@ import org.json.JSONObject
 
 const val url = "https://api.rawg.io/api/games/"
 
-const val TAGFRAG = "Feed"
+private const val TAG = "Feed"
 
 class GameFeedFragment(val game: Game): Fragment() {
     private lateinit var queue: RequestQueue
@@ -78,7 +78,7 @@ class GameFeedFragment(val game: Game): Fragment() {
                 setupRecyclerView(postList)
                 swipeRefreshLayout?.isRefreshing = false
             },Response.ErrorListener {
-                Log.d(TAGFRAG, "Unable to get game posts")
+                Log.d(TAG, "Unable to get game posts")
                 swipeRefreshLayout?.isRefreshing = false})
 
         //Add query to queue

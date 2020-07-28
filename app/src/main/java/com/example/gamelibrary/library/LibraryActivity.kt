@@ -31,7 +31,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 const val RC_SIGN_IN = 1
-const val TAG = "GoogleSignIn"
+private const val TAG = "GoogleSignIn"
 
 class LibraryActivity : AppCompatActivity() {
 

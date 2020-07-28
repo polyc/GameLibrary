@@ -31,7 +31,7 @@ import com.google.firebase.ktx.Firebase
 import org.json.JSONArray
 import org.json.JSONObject
 
-const val TAG = "Search"
+private const val TAG = "Search"
 
 const val url = "https://api.rawg.io/api/"
 

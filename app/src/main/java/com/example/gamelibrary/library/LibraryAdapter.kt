@@ -23,7 +23,7 @@ import org.json.JSONObject
 
 const val url = "https://api.rawg.io/api/"
 
-const val TAGLIB = "GameLibrary"
+private const val TAG = "GameLibrary"
 
 class LibraryAdapter(private val gameList: MutableList<String>,
                      private val db: FirebaseFirestore,
@@ -65,7 +65,7 @@ class LibraryAdapter(private val gameList: MutableList<String>,
                     setHolder(holder, gameJson, position, pref)
 
                 },Response.ErrorListener {
-                    Log.d(TAGLIB, "Unable to get game with gameId:${gameId}, trying with cache")
+                    Log.d(TAG, "Unable to get game with gameId:${gameId}, trying with cache")
                     //setup ViewHolder if there's data in cache
                     if(pref.contains(gameId))
                         setHolder(holder, JSONObject(pref.getString(gameId, "")!!), position, pref)

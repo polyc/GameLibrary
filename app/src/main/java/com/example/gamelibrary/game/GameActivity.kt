@@ -13,7 +13,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import org.json.JSONObject
 
 
-const val TAG = "Library"
+private const val TAG = "Library"
 
 class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
