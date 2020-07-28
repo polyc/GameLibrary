@@ -54,12 +54,7 @@ class LibraryAdapter(private val gameList: MutableList<String>,
                     val gameString = gameJson.toString()
 
                     //Put the Json String in SharedPreferences (cache API result)
-                    if(!pref.contains(gameId))
-                        pref.edit().putString(gameId, gameString).apply()
-                    else{
-                        pref.edit().remove(gameId)
-                        pref.edit().putString(gameId, gameString).apply()
-                    }
+                    pref.edit().putString(gameId, gameString).apply()
 
                     //setup the ViewHolder
                     setHolder(holder, gameJson, position, pref)
