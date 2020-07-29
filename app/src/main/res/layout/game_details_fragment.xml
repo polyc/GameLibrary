@@ -13,7 +13,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
@@ -50,40 +50,50 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Released:"
+                            android:text="Released"
                             android:id="@+id/release_date_placeholder"
                             android:layout_marginStart="10dp"
                             android:textStyle="bold"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:background="@drawable/rounded_corner"
+                            android:textColor="@color/white"/>
 
                         <TextView
                             android:id="@+id/release_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="@string/empty_property_placeholder"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@id/release_date_placeholder"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Playtime:"
+                            android:text="Playtime"
                             android:layout_marginStart="10dp"
                             android:id="@+id/avg_playtime_placeholder"
                             android:layout_toStartOf="@id/avg_playtime"
                             android:textStyle="bold"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:background="@drawable/rounded_corner"
+                            android:textColor="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="@string/empty_property_placeholder"
                             android:id="@+id/avg_playtime"
                             android:layout_alignParentEnd="true"
                             android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
 
                     </RelativeLayout>
 
@@ -95,20 +105,25 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Developer:"
+                            android:text="Developer"
                             android:id="@+id/developer_placeholder"
                             android:layout_marginStart="10dp"
                             android:textStyle="bold"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:background="@drawable/rounded_corner"
+                            android:textColor="@color/white"/>
 
                         <TextView
                             android:id="@+id/developer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="@string/empty_property_placeholder"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@id/developer_placeholder"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -119,20 +134,25 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Publisher:"
+                            android:text="Publisher"
                             android:layout_marginStart="10dp"
                             android:id="@+id/publisher_placeholder"
                             android:textStyle="bold"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:background="@drawable/rounded_corner"
+                            android:textColor="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="@string/empty_property_placeholder"
                             android:id="@+id/publisher"
                             android:layout_toEndOf="@id/publisher_placeholder"
                             android:layout_marginStart="10dp"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -143,21 +163,26 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Website:"
+                            android:text="Website"
                             android:layout_marginStart="10dp"
                             android:id="@+id/website_placeholder"
                             android:textStyle="bold"
-                            android:textSize="17sp"/>
+                            android:textSize="14sp"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:background="@drawable/rounded_corner"
+                            android:textColor="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="@string/empty_property_placeholder"
                             android:id="@+id/website"
                             android:layout_toEndOf="@id/website_placeholder"
                             android:layout_marginStart="10dp"
-                            android:textSize="17sp"
-                            android:autoLink="web"/>
+                            android:textSize="14sp"
+                            android:autoLink="web"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
                     </RelativeLayout>
 
                 </LinearLayout>
