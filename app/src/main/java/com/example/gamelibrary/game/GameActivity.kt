@@ -10,10 +10,11 @@ import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import org.json.JSONArray
 import org.json.JSONObject
 
 
-private const val TAG = "Library"
+private const val TAG = "Game"
 
 class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,10 +62,27 @@ class GameActivity : AppCompatActivity() {
             val publisher = publishers[publishers.length()-1] as JSONObject
             pubName = publisher.getString("name")
         }
+
+        val genresJson:JSONArray = gameJson.getJSONArray("genres")
+        val genres = mutableListOf<String>()
+        for (gnr_idx in 0 until genresJson.length()) {
+            val genre: JSONObject = genresJson[gnr_idx] as JSONObject
+            val genreName: String = genre.getString("name")
+            genres.add(genreName)
+        }
+
+        val tagsJson:JSONArray = gameJson.getJSONArray("tags")
+        val tags = mutableListOf<String>()
+        for (tag_idx in 0 until tagsJson.length()) {
+            val tag: JSONObject = tagsJson[tag_idx] as JSONObject
+            val tagName: String = tag.getString("name")
+            tags.add(tagName)
+        }
+
         
         //instantiate the game data object
         val game = Game(name, id, backgroundImage, metacriticRating, description,
-            website, releaseDate, averagePlaytime,devName, pubName)
+            website, releaseDate, averagePlaytime,devName, pubName, genres, tags)
 
         //Setup the TabLayout
         val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
