@@ -1,10 +1,14 @@
 package com.example.gamelibrary.library
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
+import android.widget.SearchView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,7 +45,8 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var viewAdapter: LibraryAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var queue: RequestQueue? = null
-    private lateinit var library :MutableList<String>
+    private lateinit var keys: MutableList<String>
+    private lateinit var gameNames: MutableList<String>
     private lateinit var  googleSignInClient: GoogleSignInClient
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var userObj: UserData
@@ -171,9 +176,7 @@ class LibraryActivity : AppCompatActivity() {
 
     private fun getLibrary(snapshot: DocumentSnapshot): Map<String, String> {
         //get Library Map from Firebase
-        var libData = snapshot.get("library") as Map<String, String>
-        //don't consider init key
-        return libData.filterKeys { key-> key != "init" }
+        return snapshot.get("library") as Map<String, String>
     }
 
     //call it after authentication only
@@ -183,11 +186,16 @@ class LibraryActivity : AppCompatActivity() {
             queue = Volley.newRequestQueue(applicationContext)
 
         //get a mutable list of game ID's
-        library = getLibrary(doc).keys.toMutableList()
+        val library = getLibrary(doc)
+
+        keys = library.filterKeys { key-> key != "init" }.keys.toMutableList()
+
+        //get a mutable list of values (Game name)
+        gameNames = library.values.filter { value-> value != "init" }.toMutableList()
 
         //prepare the recycler view
         viewManager = LinearLayoutManager(this)
-        viewAdapter = LibraryAdapter(library, db, auth.uid!!, queue!!, this)
+        viewAdapter = LibraryAdapter(keys, gameNames, db, auth.uid!!, queue!!, this)
 
         recyclerView = findViewById<RecyclerView>(R.id.library_recycler_view).apply {
             layoutManager = viewManager
@@ -199,8 +207,11 @@ class LibraryActivity : AppCompatActivity() {
     private fun refreshLibrary(force: Boolean = false){
         db.collection("userData").document(auth.currentUser!!.uid).
         get().addOnSuccessListener{
-            library.clear()
-            library.addAll(getLibrary(it).keys.toMutableList())
+            val library = getLibrary(it)
+            keys.clear()
+            keys.addAll(library.filterKeys { key-> key != "init" }.keys.toMutableList())
+            gameNames.clear()
+            gameNames.addAll(library.values.filter { value-> value != "init" }.toMutableList())
             //notify the adapter
             viewAdapter.forceRefresh = force
             viewAdapter.notifyDataSetChanged()
@@ -223,6 +234,28 @@ class LibraryActivity : AppCompatActivity() {
         val inflater = menuInflater
         //inflate the search_menu library_menu.xml
         inflater.inflate(R.menu.library_menu, menu)
+
+        //Setup library filtering
+        val searchView = menu?.findItem(R.id.actionSearch)?.actionView as SearchView
+        searchView.apply {
+            imeOptions = EditorInfo.IME_ACTION_DONE
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(p0: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(p0: String?): Boolean {
+                    viewAdapter.filter.filter(p0)
+                    return false
+                }
+            })
+
+            //set search hint text color
+            val id = context.resources.getIdentifier("android:id/search_src_text", null, null)
+            findViewById<TextView>(id).apply {
+                setTextColor(Color.WHITE)
+            }
+        }
 
         return true
     }
