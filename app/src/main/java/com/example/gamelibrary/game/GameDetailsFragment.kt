@@ -1,6 +1,7 @@
 package com.example.gamelibrary.game
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -11,7 +12,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
+import com.example.gamelibrary.search.SearchActivity
 import com.squareup.picasso.Picasso
+import java.util.*
 
 private const val TAG = "DetailsFragment"
 class GameDetailsFragment(private val game: Game): Fragment() {
@@ -90,6 +93,11 @@ class GameDetailsFragment(private val game: Game): Fragment() {
                     lastViewId +=1
                     textView.id = lastViewId
                     textView.layoutParams = lp
+                    textView.setOnClickListener {
+                        val intent = Intent(context, SearchActivity::class.java)
+                        intent.putExtra("queryFilter", "genres=${genre.toLowerCase(Locale.ROOT)}")
+                        startActivity(intent)
+                    }
                 }
             }
         }

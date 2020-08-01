@@ -75,7 +75,11 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         else {//perform the default search
-            this.query = null
+            val queryFilter = intent.extras?.getString("queryFilter")
+            if (queryFilter!= null)
+                this.query = queryFilter
+            else
+                this.query = null
             defaultQuery = true
             setRefreshListener(this.query, defaultQuery)
             search(this.query, defaultQuery)
@@ -108,7 +112,11 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         else {
-            this.query = null
+            val queryFilter = intent?.extras?.getString("queryFilter")
+            if (queryFilter!= null)
+                this.query = queryFilter
+            else
+                this.query = null
             defaultQuery = true
             setRefreshListener(this.query, defaultQuery)
             search(this.query, defaultQuery)
@@ -160,12 +168,17 @@ class SearchActivity : AppCompatActivity() {
         //prepare the query for API
         val q =
             if(defaultQuery){
-                "games"
+                if (this.query != null){
+                    "games?$query"
+                }
+                else
+                    "games"
             }
             else {
                 "games?search=$query"
             }
 
+        Log.d(TAG, url+q)
         //Setup the request
         val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
             val gameList = parseResult(response)
@@ -180,7 +193,12 @@ class SearchActivity : AppCompatActivity() {
     private fun loadMoreSearch(query :String?, page :Int, defaultQuery: Boolean = true, totalItemsCount: Int){
         val q =
             if(defaultQuery){
-                "games?page=$page"
+                if (this.query != null){
+                    "games?page=$page&$query"
+                }
+                else{
+                    "games?page=$page"
+                }
             }
             else {"games?search="+query+"&page="+page}
 
