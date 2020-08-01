@@ -210,8 +210,13 @@ class LibraryActivity : AppCompatActivity() {
             val library = getLibrary(it)
             keys.clear()
             keys.addAll(library.filterKeys { key-> key != "init" }.keys.toMutableList())
+            viewAdapter.gameList.clear()
+            viewAdapter.gameList.addAll(keys)
+
             gameNames.clear()
             gameNames.addAll(library.values.filter { value-> value != "init" }.toMutableList())
+            viewAdapter.gameNames.clear()
+            viewAdapter.gameNames.addAll(gameNames)
             //notify the adapter
             viewAdapter.forceRefresh = force
             viewAdapter.notifyDataSetChanged()

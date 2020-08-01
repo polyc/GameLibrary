@@ -36,8 +36,8 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
                      private val context: Activity):
     RecyclerView.Adapter<LibraryViewHolder>(), Filterable {
 
-    private var gameList:MutableList<String> = mutableListOf()
-    private var gameNames:MutableList<String> = mutableListOf()
+    var gameList:MutableList<String> = mutableListOf()
+    var gameNames:MutableList<String> = mutableListOf()
     var forceRefresh: Boolean = false
 
     init {
@@ -190,8 +190,6 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
                     gameNameFiltered.add(gameName)
                 }
             }
-            Log.d(TAG, lists.first.toString())
-            Log.d(TAG, lists.second.toString())
             return Pair(filteredIdList, gameNameFiltered)
         }
 
