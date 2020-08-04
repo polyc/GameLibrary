@@ -124,6 +124,11 @@ class GameDetailsFragment(private val game: Game): Fragment() {
                     lastViewId +=1
                     textView.id = lastViewId
                     textView.layoutParams = lp
+                    textView.setOnClickListener {
+                        val intent = Intent(context, SearchActivity::class.java)
+                        intent.putExtra("queryFilter", "tags=${tag.toLowerCase(Locale.ROOT)}")
+                        startActivity(intent)
+                    }
                 }
             }
         }
