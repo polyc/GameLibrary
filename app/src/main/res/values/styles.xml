@@ -5,17 +5,19 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionBarWidgetTheme">@style/SupportActionBarTheme</item>
     </style>
 
-    <style name="AppTheme.Launcher" parent="AppTheme">
+    <!--<style name="AppTheme.Launcher" parent="AppTheme">
         <item name="android:windowBackground">
-            @drawable/launch_screen
+            @drawable/logo
         </item>
-    </style>
+    </style>-->
 
     <!-- SupportActionBar Text Color -->
     <style name="SupportActionBarTheme" parent="AppTheme">
         <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
     </style>
 
 </resources>

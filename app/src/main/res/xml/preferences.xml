@@ -19,6 +19,15 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:key="search"
+        app:title="Search">
+        <Preference
+            app:key="clear_recent_search"
+            app:title="Clear recent searches"
+            app:summary="Clear search history suggestions"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:key="layout"
         app:title="Layout">
 

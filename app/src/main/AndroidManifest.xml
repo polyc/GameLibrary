@@ -27,13 +27,18 @@
         </activity>
         <activity
             android:name=".library.LibraryActivity"
-            android:theme="@style/AppTheme.Launcher" >
+            android:theme="@style/AppTheme">
+            <!--android:theme="@style/AppTheme.Launcher" >-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <provider
+            android:name=".search.SearchGamesRecentSuggestionsProvider"
+            android:authorities="com.example.gamelibrary.search.SearchGamesRecentSuggestionsProvider"/>
     </application>
 
 </manifest>

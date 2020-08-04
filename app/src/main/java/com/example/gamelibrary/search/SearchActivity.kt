@@ -4,6 +4,7 @@ import android.app.SearchManager
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.provider.SearchRecentSuggestions
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -68,6 +69,10 @@ class SearchActivity : AppCompatActivity() {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
                 this.query = query
                 defaultQuery = false
+                //save query to search suggestion provider
+                SearchRecentSuggestions(this, SearchGamesRecentSuggestionsProvider.AUTHORITY,
+                    SearchGamesRecentSuggestionsProvider.MODE).saveRecentQuery(query, null)
+
                 //perform the custom search
                 setRefreshListener(this.query, defaultQuery)
                 search(this.query, defaultQuery)
@@ -107,6 +112,11 @@ class SearchActivity : AppCompatActivity() {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
                 this.query = query
                 defaultQuery = false
+                //save query to search suggestion provider
+                SearchRecentSuggestions(this, SearchGamesRecentSuggestionsProvider.AUTHORITY,
+                    SearchGamesRecentSuggestionsProvider.MODE).saveRecentQuery(query, null)
+
+                //perform the custom search
                 setRefreshListener(this.query, defaultQuery)
                 search(this.query, defaultQuery)
             }
