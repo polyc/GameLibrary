@@ -108,6 +108,7 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
             ))
             //delete entry in adapter data list and name list
             val id = game.getString("id")
+            pref.edit().remove(gameList[position]).apply()
             gameList.remove(id)
             gameListFull.remove(id)
             val name = game.getString("name")
@@ -118,7 +119,6 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount);
 
-            pref.edit().remove(gameList[position]).apply()
         }
 
         //setup the details FAB behavior
