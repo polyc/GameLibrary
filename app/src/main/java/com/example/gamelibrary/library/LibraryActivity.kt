@@ -35,7 +35,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 const val RC_SIGN_IN = 1
-private const val TAG = "GoogleSignIn"
+private const val TAG = "LibraryActivity"
 
 class LibraryActivity : AppCompatActivity() {
 
@@ -74,7 +74,7 @@ class LibraryActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        //handle logout case
+        //not logged in
         if(auth.uid == null){
             setTheme(R.style.AppTheme)
             setContentView(R.layout.activity_library)

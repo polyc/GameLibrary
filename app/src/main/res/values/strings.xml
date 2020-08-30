@@ -7,4 +7,7 @@
     <string name="videogame_image_background">videogame image background</string>
     <string name="action_settings">Settings</string>
     <string name="empty_property_placeholder">-</string>
+    <string name="dialog_delete_account">Do you really want to delete your account?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>

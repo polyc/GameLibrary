@@ -39,13 +39,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="logout"
-        app:title="Logout">
+        app:key="account"
+        app:title="Account">
 
         <Preference
             app:key="logout_button"
             app:title="Logout from this account">
+        </Preference>
 
+        <Preference
+            app:key="delete_account_button"
+            app:title="Delete this account"
+            app:summary="All your data will be lost. This is not reversible">
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

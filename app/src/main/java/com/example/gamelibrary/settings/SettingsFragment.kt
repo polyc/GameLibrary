@@ -13,9 +13,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-private const val TAG = "Settings"
+private const val TAG = "SettingsFragment"
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat(){
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
@@ -43,6 +43,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         logoutPreference?.setOnPreferenceClickListener {
             Firebase.auth.signOut()
             activity?.finish()
+            true
+        }
+
+        //Delete account
+        val deletePreference = findPreference<Preference>("delete_account_button")
+        deletePreference?.setOnPreferenceClickListener {
+            val deleteAccountFragment = DeleteAccountDialogFragment()
+            deleteAccountFragment.show(parentFragmentManager, null)
             true
         }
 
