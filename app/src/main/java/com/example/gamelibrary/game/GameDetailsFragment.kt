@@ -28,6 +28,7 @@ class GameDetailsFragment(private val game: Game): Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        retainInstance = true
 
         //Set game image
         view.findViewById<ImageView>(R.id.background_image_details).apply {

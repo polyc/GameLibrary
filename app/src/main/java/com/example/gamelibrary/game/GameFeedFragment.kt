@@ -53,6 +53,7 @@ class GameFeedFragment(val game: Game): Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        retainInstance = true
         swipeRefreshLayout = view.findViewById(R.id.feed_refresh_layout)
         setRefreshListener()
         swipeRefreshLayout?.isRefreshing = true
