@@ -9,13 +9,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.EndlessRecyclerViewScrollListner
@@ -81,7 +81,7 @@ class GameFeedFragment(val game: Game): Fragment() {
         if (forceRefresh || !pref!!.contains(gameId)){
             //get data from API
             val request = JsonObjectRequest(Request.Method.GET, query, null,
-                Response.Listener { response ->
+                { response ->
                     val postsJson: JSONObject = response
                     val postString: String = postsJson.toString()
 
@@ -92,13 +92,14 @@ class GameFeedFragment(val game: Game): Fragment() {
                     val postList = parseResult(response)
                     setupRecyclerView(postList)
                     swipeRefreshLayout?.isRefreshing = false },
-                Response.ErrorListener {
+                {
                     Log.d(TAG, "Unable to get game posts of game: $gameId")
                     //maybe client is offline, get data from cache if any
                     if (pref!!.contains(gameId)){
                         val postList = parseResult(JSONObject(pref.getString(gameId, "")!!))
                         setupRecyclerView(postList)
                     }
+                    Toast.makeText(context, "It seems your offline, check your internet connection", Toast.LENGTH_SHORT).show()
                     swipeRefreshLayout?.isRefreshing = false})
 
             //Add query to queue
@@ -161,16 +162,21 @@ class GameFeedFragment(val game: Game): Fragment() {
         val q = "$query?page=$page"
 
         //Setup the request
-        val queryRequest = JsonObjectRequest(Request.Method.GET, q, null, Response.Listener { response ->
+        val queryRequest = JsonObjectRequest(Request.Method.GET, q, null, { response ->
+            swipeRefreshLayout?.isRefreshing = false
             val postList = parseResult(response)
             (viewAdapter as PostAdapter).apply {
                 this.postList.addAll(postList)
                 notifyItemRangeInserted(totalItemsCount, postList.size)
             }
 
-        }, Response.ErrorListener { Log.d(TAG, "Unable to get more posts, client could be offline") })
+        }, {
+            swipeRefreshLayout?.isRefreshing = false
+            Log.d(TAG, "Unable to get more posts, client could be offline")
+        })
 
         //Add query to queue
+        swipeRefreshLayout?.isRefreshing = true
         queue.add(queryRequest)
     }
 

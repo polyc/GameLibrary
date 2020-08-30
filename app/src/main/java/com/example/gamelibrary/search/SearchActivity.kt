@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.EndlessRecyclerViewScrollListner
@@ -190,11 +190,15 @@ class SearchActivity : AppCompatActivity() {
 
         Log.d(TAG, url+q)
         //Setup the request
-        val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
+        val queryRequest = StringRequest(Request.Method.GET, url+q, { response ->
             val gameList = parseResult(response)
             setupRecyclerView(gameList)
             swipeRefreshLayout.isRefreshing = false
-        }, Response.ErrorListener { Log.d(TAG, "didn't work") })
+        }, {
+            swipeRefreshLayout.isRefreshing = false
+            Log.d(TAG, "Not able to get search results")
+            Toast.makeText(applicationContext, "Not able to get search results, check your network", Toast.LENGTH_SHORT).show()
+        })
 
         //Add query to queue
         queue.add(queryRequest)
@@ -213,16 +217,22 @@ class SearchActivity : AppCompatActivity() {
             else {"games?search="+query+"&page="+page}
 
         //Setup the request
-        val queryRequest = StringRequest(Request.Method.GET, url+q, Response.Listener { response ->
+        val queryRequest = StringRequest(Request.Method.GET, url+q, { response ->
             val gameList = parseResult(response)
             (viewAdapter as SearchAdapter).apply {
+                swipeRefreshLayout.isRefreshing = false
                 this.gameList.addAll(gameList)
                 notifyItemRangeInserted(totalItemsCount, gameList.size)
             }
 
-        }, Response.ErrorListener { Log.d(TAG, "didn't work") })
+        }, {
+            swipeRefreshLayout.isRefreshing = false
+            Log.d(TAG, "Not able to get search results")
+            Toast.makeText(applicationContext, "Not able to get search results, check your network", Toast.LENGTH_SHORT).show()
+        })
 
         //Add query to queue
+        swipeRefreshLayout.isRefreshing = true
         queue.add(queryRequest)
     }
 
@@ -273,7 +283,6 @@ class SearchActivity : AppCompatActivity() {
         swipeRefreshLayout.apply {
             setOnRefreshListener {
                 search(query, defaultQuery)
-                isRefreshing = false
             }
             setColorSchemeResources(R.color.colorPrimary)
         }
