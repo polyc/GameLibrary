@@ -13,7 +13,6 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.example.gamelibrary.R
 import com.example.gamelibrary.game.GameActivity
@@ -60,7 +59,7 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
         if(forceRefresh || !pref.contains(gameId)){
             //get data from API
             val request = JsonObjectRequest(Request.Method.GET, getQuery(gameId), null,
-                Response.Listener { response ->
+                { response ->
                     val gameJson: JSONObject = response
                     val gameString = gameJson.toString()
 
@@ -70,7 +69,7 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
                     //setup the ViewHolder
                     setHolder(holder, gameJson, position, pref)
 
-                },Response.ErrorListener {
+                }, {
                     Log.d(TAG, "Unable to get game with gameId:${gameId}, trying with cache")
                     //setup ViewHolder if there's data in cache
                     if(pref.contains(gameId))

@@ -165,6 +165,8 @@ class LibraryActivity : AppCompatActivity() {
                             //display library
                             populateLibrary(doc)
                         }
+                    }.addOnFailureListener{
+                        Toast.makeText(applicationContext, "Not able to get your library, check your network connection", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     // If sign in fails, display a message to the user.
