@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.example.gamelibrary.R
 import com.example.gamelibrary.game.GameActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
@@ -99,12 +100,12 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
         if(!game.isNull("background_image"))
             Picasso.get().load(game.getString("background_image")).fit().into(holder.backgroundImage)
 
+        val remove:FloatingActionButton = holder.remove
         //setup the remove FAB behavior
-        holder.remove.setOnClickListener {
+        remove.setOnClickListener {
             //delete entry in Firebase
             db.collection("userData").document(userId).update(hashMapOf<String,Any>(
-                "library."+game.get("id").toString() to FieldValue.delete()
-            ))
+                "library."+game.get("id").toString() to FieldValue.delete()))
             //delete entry in adapter data list and name list
             val id = game.getString("id")
             pref.edit().remove(gameList[position]).apply()
@@ -119,13 +120,20 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
             notifyItemRangeChanged(position, itemCount);
 
         }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            remove.tooltipText = "Remove from library"
+        }
 
+        val details: FloatingActionButton= holder.details
         //setup the details FAB behavior
-        holder.details.setOnClickListener{
+        details.setOnClickListener{
             //start GameActivity
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("gameID", gameList[position])
             context.startActivity(intent)
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            details.tooltipText = "Game details and feed"
         }
     }
 

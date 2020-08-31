@@ -52,10 +52,10 @@ class SearchAdapter (val gameList: MutableList<Game?>,
                 }
             }.addOnFailureListener{}
 
-
+            val addRemove: FloatingActionButton = holder.addRemove
             // Add/Remove a Game from library
-            holder.addRemove.setOnClickListener { view ->
-                view.findViewById<FloatingActionButton>(R.id.addRemove).apply {
+            addRemove.setOnClickListener { view ->
+                addRemove.apply {
                     db.collection("userData").document(userId).get().addOnSuccessListener {userData ->
 
                         val library = userData.get("library") as Map<String, String>
@@ -81,6 +81,9 @@ class SearchAdapter (val gameList: MutableList<Game?>,
                         Toast.makeText(context, "Task Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                addRemove.tooltipText = "Add to or remove from library"
             }
         }
 

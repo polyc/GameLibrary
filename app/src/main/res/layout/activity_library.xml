@@ -33,6 +33,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="15dp"
+            android:tooltipText="Add a game"
             />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
