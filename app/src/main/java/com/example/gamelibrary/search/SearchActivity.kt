@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -22,7 +24,6 @@ import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.EndlessRecyclerViewScrollListner
 import com.example.gamelibrary.R
 import com.example.gamelibrary.data.Game
-import com.example.gamelibrary.settings.SettingsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -158,10 +159,6 @@ class SearchActivity : AppCompatActivity() {
             finish()
             true
         }
-        R.id.search_action_settings -> {
-            startActivity(Intent(applicationContext, SettingsActivity::class.java))
-            true
-        }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -194,6 +191,14 @@ class SearchActivity : AppCompatActivity() {
             val gameList = parseResult(response)
             setupRecyclerView(gameList)
             swipeRefreshLayout.isRefreshing = false
+            if(gameList.isEmpty()){
+                findViewById<ImageView>(R.id.empty_results_image).apply {
+                    visibility = ImageView.VISIBLE
+                }
+                findViewById<TextView>(R.id.empty_results_text).apply {
+                    visibility = TextView.VISIBLE
+                }
+            }
         }, {
             swipeRefreshLayout.isRefreshing = false
             Log.d(TAG, "Not able to get search results")
