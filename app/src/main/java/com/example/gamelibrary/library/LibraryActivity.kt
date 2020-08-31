@@ -17,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.example.gamelibrary.R
+import com.example.gamelibrary.about.AboutActivity
 import com.example.gamelibrary.data.UserData
 import com.example.gamelibrary.search.SearchActivity
 import com.example.gamelibrary.settings.SettingsActivity
@@ -270,6 +271,10 @@ class LibraryActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.library_action_settings -> {
             startActivity(Intent(applicationContext, SettingsActivity::class.java))
+            true
+        }
+        R.id.library_action_about -> {
+            startActivity(Intent(applicationContext, AboutActivity::class.java))
             true
         }
         else -> {
