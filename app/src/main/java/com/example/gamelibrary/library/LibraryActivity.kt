@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
@@ -51,6 +52,8 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var  googleSignInClient: GoogleSignInClient
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var userObj: UserData
+    private lateinit var emptyLibraryImage: ImageView
+    private lateinit var emptyLibraryText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -95,6 +98,9 @@ class LibraryActivity : AppCompatActivity() {
             googleSignInClient.signOut()
             signIn()
         }
+
+        emptyLibraryImage = findViewById<ImageView>(R.id.empty_library_image)
+        emptyLibraryText = findViewById<TextView>(R.id.empty_library_text)
 
         //setup a listener for addGames button
         findViewById<FloatingActionButton>(R.id.addGames).setOnClickListener{
@@ -205,6 +211,15 @@ class LibraryActivity : AppCompatActivity() {
             adapter = viewAdapter
         }
         swipeRefreshLayout.isRefreshing = false
+
+        if(keys.isEmpty()){
+            emptyLibraryImage.visibility = ImageView.VISIBLE
+            emptyLibraryText.visibility = TextView.VISIBLE
+        }
+        else if(emptyLibraryImage.visibility == ImageView.VISIBLE){
+            emptyLibraryImage.visibility = ImageView.GONE
+            emptyLibraryText.visibility = TextView.GONE
+        }
     }
 
     private fun refreshLibrary(force: Boolean = false){
@@ -223,6 +238,15 @@ class LibraryActivity : AppCompatActivity() {
             //notify the adapter
             viewAdapter.forceRefresh = force
             viewAdapter.notifyDataSetChanged()
+
+            if(keys.isEmpty()){
+                emptyLibraryImage.visibility = ImageView.VISIBLE
+                emptyLibraryText.visibility = TextView.VISIBLE
+            }
+            else if(emptyLibraryImage.visibility == ImageView.VISIBLE){
+                emptyLibraryImage.visibility = ImageView.GONE
+                emptyLibraryText.visibility = TextView.GONE
+            }
         }
         swipeRefreshLayout.isRefreshing = false
     }

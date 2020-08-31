@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -118,6 +120,18 @@ class LibraryAdapter(private val gameListFull: MutableList<String>,
             //notify the adapter
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, itemCount);
+
+            val emptyLibraryImage = context.findViewById<ImageView>(R.id.empty_library_image)
+            val emptyLibraryText = context.findViewById<TextView>(R.id.empty_library_text)
+
+            if(gameListFull.isEmpty()){
+                emptyLibraryImage.visibility = ImageView.VISIBLE
+                emptyLibraryText.visibility = TextView.VISIBLE
+            }
+            else if (emptyLibraryImage.visibility == ImageView.VISIBLE){
+                emptyLibraryImage.visibility = ImageView.GONE
+                emptyLibraryText.visibility = TextView.GONE
+            }
 
         }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

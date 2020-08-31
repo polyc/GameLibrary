@@ -19,6 +19,25 @@
         app:subtitleTextColor="#FFFFFF"
         app:title="@string/app_name"/>
 
+    <ImageView
+        android:layout_marginTop="160dp"
+        android:id="@+id/empty_library_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="@drawable/ic_space_invaders"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nothing here, add your games"
+        android:textSize="26sp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:id="@+id/empty_library_text"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

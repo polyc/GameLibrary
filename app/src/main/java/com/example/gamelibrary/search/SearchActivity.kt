@@ -185,7 +185,6 @@ class SearchActivity : AppCompatActivity() {
                 "games?search=$query"
             }
 
-        Log.d(TAG, url+q)
         //Setup the request
         val queryRequest = StringRequest(Request.Method.GET, url+q, { response ->
             val gameList = parseResult(response)

@@ -24,7 +24,7 @@
         android:id="@+id/empty_results_image"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:background="@drawable/ic_space_invaders"
+        android:background="@drawable/ic_ghost"
         android:layout_gravity="center"
         android:visibility="gone"/>
 
@@ -32,7 +32,7 @@
         android:layout_marginTop="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nothing found, please try again!"
+        android:text="Nothing found, please try again"
         android:textSize="26sp"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"
