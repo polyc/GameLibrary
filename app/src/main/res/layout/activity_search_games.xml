@@ -20,7 +20,7 @@
         app:title="Search"/>
 
     <ImageView
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="90dp"
         android:id="@+id/empty_results_image"
         android:layout_width="250dp"
         android:layout_height="250dp"
@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nothing found, please try again"
-        android:textSize="26sp"
+        android:textSize="23sp"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"
         android:id="@+id/empty_results_text"/>
