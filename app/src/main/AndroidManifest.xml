@@ -30,7 +30,7 @@
         </activity>
 
         <activity android:name=".library.LibraryActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.Launcher">
             <!-- android:theme="@style/AppTheme.Launcher" > -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
