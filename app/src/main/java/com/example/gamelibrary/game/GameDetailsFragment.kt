@@ -3,7 +3,6 @@ package com.example.gamelibrary.game
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.webkit.WebView
 import android.widget.ImageView
@@ -82,7 +81,6 @@ class GameDetailsFragment(private val game: Game): Fragment() {
                     textView.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
                     textView.background = resources.getDrawable(R.drawable.rounded_corner, null)
                     addView(textView)
-                    Log.d(TAG, textView.id.toString())
                     val lp = textView.layoutParams as RelativeLayout.LayoutParams
                     lp.apply {
                         if (lastViewId != 0){

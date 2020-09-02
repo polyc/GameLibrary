@@ -95,8 +95,6 @@ class GameActivity : AppCompatActivity() {
         tabLayout.addTab(tabLayout.newTab().setText(second))
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
-        //Log.d(TAG, "${game.toString()}")
-
         //Setup the ViewPager
         val numOfTabs = 2
         val viewPager = findViewById<ViewPager2>(R.id.pager)

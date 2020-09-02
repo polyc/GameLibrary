@@ -116,7 +116,6 @@ class GameFeedFragment(val game: Game): Fragment() {
         else{//get data from cache, if any
             if (pref.contains(gameId)){
                 val postList = parseResult(JSONObject(pref.getString(gameId, "")!!))
-                Log.d(TAG, postList.toString())
                 setupRecyclerView(postList)
             }
             swipeRefreshLayout?.isRefreshing = false
@@ -166,7 +165,6 @@ class GameFeedFragment(val game: Game): Fragment() {
         recyclerView.addOnScrollListener(scrollListener as EndlessRecyclerViewScrollListner)
 
         if(postList.isEmpty()){
-            Log.d(TAG, postList.toString())
             emptyFeedImage?.visibility = ImageView.VISIBLE
             emptyFeedText?.visibility = TextView.VISIBLE
         }

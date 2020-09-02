@@ -155,7 +155,6 @@ class LibraryActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
-                    Log.d(TAG, "${user.toString()}")
 
                     //Update UserData to Firebase, if not present any. Else populate the UI with library
                     db = Firebase.firestore
