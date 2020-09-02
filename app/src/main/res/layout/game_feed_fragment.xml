@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_height="match_parent"
+<LinearLayout
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_marginTop="90dp"
+        android:id="@+id/empty_feed_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="@drawable/ic_piranha"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nothing here, maybe the game doesn't have a SubReddit"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:id="@+id/empty_feed_text"
+        android:paddingEnd="10dp"/>
+
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
@@ -16,4 +40,4 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +44,8 @@ class GameFeedFragment(val game: Game): Fragment() {
     private var query: String? = null
     private var forceRefresh = false
     private lateinit var pref: SharedPreferences
-
+    private var emptyFeedImage: ImageView? = null
+    private var emptyFeedText: TextView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +66,9 @@ class GameFeedFragment(val game: Game): Fragment() {
         queue = Volley.newRequestQueue(activity)
 
         query = url + game.id + "/reddit"
+
+        emptyFeedImage = getView()?.findViewById<ImageView>(R.id.empty_feed_image)
+        emptyFeedText = getView()?.findViewById<TextView>(R.id.empty_feed_text)
 
         getPosts()
     }
@@ -107,9 +113,10 @@ class GameFeedFragment(val game: Game): Fragment() {
             queue.add(request)
             forceRefresh = false
         }
-        else{//get data from cache
+        else{//get data from cache, if any
             if (pref.contains(gameId)){
                 val postList = parseResult(JSONObject(pref.getString(gameId, "")!!))
+                Log.d(TAG, postList.toString())
                 setupRecyclerView(postList)
             }
             swipeRefreshLayout?.isRefreshing = false
@@ -157,6 +164,16 @@ class GameFeedFragment(val game: Game): Fragment() {
         }
 
         recyclerView.addOnScrollListener(scrollListener as EndlessRecyclerViewScrollListner)
+
+        if(postList.isEmpty()){
+            Log.d(TAG, postList.toString())
+            emptyFeedImage?.visibility = ImageView.VISIBLE
+            emptyFeedText?.visibility = TextView.VISIBLE
+        }
+        else if(emptyFeedImage?.visibility == ImageView.VISIBLE){
+            emptyFeedImage?.visibility = ImageView.GONE
+            emptyFeedText?.visibility = TextView.GONE
+        }
     }
 
     private fun loadMoreSearch(page :Int, totalItemsCount: Int){
